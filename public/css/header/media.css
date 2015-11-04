@@ -1,0 +1,102 @@
+/*==========  Non-Mobile First Method  ==========*/
+
+/* Large Devices, Wide Screens */
+@media only screen and (max-width : 1200px) {
+
+}
+
+/* Medium Devices, Desktops */
+@media only screen and (max-width : 992px) {
+
+    .sell-right .sell-btn {
+        margin: 15px auto;
+        float: none;
+    }
+
+    .sell-descr {
+        text-align: center;
+    }
+
+    .info-item {
+        margin-top: 10px;
+    }
+
+}
+
+/* Small Devices, Tablets */
+@media only screen and (max-width : 768px) {
+    .top-links {
+        display: none;
+        background-color: #585d61;
+        margin-top: 11px;
+        padding: 14px;
+        position: absolute;
+        vertical-align: middle;
+        text-align: center;
+        width: 100%;
+    }
+
+    .login-field {
+        display: block;
+        margin: 10px auto;
+    }
+
+
+    .main-menu ul {
+        display: none;
+        margin-top: 45px;
+        position: absolute;
+        background-color: #3797BF;
+        width: 100%;
+    }
+
+    .main-menu ul li {
+        display: block;
+    }
+
+}
+
+/* Extra Small Devices, Phones */
+@media only screen and (max-width : 480px) {
+
+}
+
+/* Custom, iPhone Retina */
+@media only screen and (max-width : 320px) {
+
+}
+
+
+
+/*==========  Mobile First Method  ==========*/
+
+/* Custom, iPhone Retina */
+@media only screen and (min-width : 320px) {
+
+}
+
+/* Extra Small Devices, Phones */
+@media only screen and (min-width : 480px) {
+
+}
+
+/* Small Devices, Tablets */
+@media only screen and (min-width : 768px) {
+    .top-links {
+        display: inline-block !important;
+    }
+
+    .main-menu ul {
+        display: block !important;
+    }
+}
+
+/* Medium Devices, Desktops */
+@media only screen and (min-width : 992px) {
+
+}
+
+/* Large Devices, Wide Screens */
+@media only screen and (min-width : 1200px) {
+
+}

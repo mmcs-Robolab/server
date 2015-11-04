@@ -1,0 +1,13 @@
+.main-footer {
+    background-color: #43484C;
+}
+
+
+.copyright {
+    padding: 100px 0 10px 0;
+    text-align: center;
+    font-size: 15px;
+    text-transform: uppercase;
+    color: #fff;
+    font-family: "RobotoMedium";
+}

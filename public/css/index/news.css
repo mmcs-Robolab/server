@@ -1,0 +1,39 @@
+.main-content {
+    padding: 70px 0;
+}
+
+.blog-item {
+    text-align: center;
+}
+
+
+.blog-item img {
+    max-width: 100%;
+    margin-bottom: 20px;
+}
+
+
+.blog-item h3 {
+    text-transform: uppercase;
+    font-family: "RobotoCondensedRegular";
+    margin-bottom: 10px;
+}
+
+.blog-item-text {
+    margin-top: 50px;
+    text-align: left;
+    font-family: "RobotoLight";
+    font-size: 15px;
+}
+
+.blog-item p {
+    margin-top: 0;
+}
+
+
+.right-aside {
+    padding: 15px 0;
+    border-radius: 5px;
+    background-color: #eee;
+    /*margin-top: 30px;*/
+}

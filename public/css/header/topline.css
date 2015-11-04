@@ -1,0 +1,69 @@
+
+.header-topline {
+    background-color: #43484C;
+    padding: 10px 0;
+    box-shadow: 0 1px 5px 1px #292a2a;
+}
+
+.header-topline a {
+    color: #fff;
+}
+
+.top-links {
+    display: inline-block;
+    vertical-align: middle;
+    z-index: 10;
+}
+
+.top-links a {
+    text-decoration: underline;
+}
+
+.top-links a:hover {
+    text-decoration: none;
+}
+
+.login-field {
+    vertical-align: middle;
+    outline: none;
+    border: 1px solid #7d8085;
+    border-radius: 11px;
+    background-color: #74777c;
+    padding: 3px 18px;
+    font-size: 13px;
+    color: #fff;
+    width: 122px;
+    margin-left: 5px;
+}
+
+.btn-login, .btn-registration {
+    vertical-align: middle;
+    border: medium none;
+    background-color: transparent;
+    font-size: 30px;
+    color: #fff;
+}
+
+.btn-login:hover, .btn-registration:hover {
+    color: #b2b5bc;
+}
+
+.btn-login:active, .btn-registration:active {
+    color: #9ca0a8;
+}
+
+.soc-buttons {
+    float: right;
+}
+
+.soc-buttons a {
+    font-size: 26px;
+    margin-left: 8px;
+}
+
+.auth-btns, .main-menu-btn {
+    border: medium none;
+    background-color: transparent;
+    font-size: 26px;
+    color: #fff;
+}

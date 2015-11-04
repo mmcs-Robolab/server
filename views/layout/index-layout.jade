@@ -1,0 +1,22 @@
+doctype html
+html
+  head
+    title= title
+
+    link(rel='stylesheet', href='/bower_components/bootstrap/dist/css/bootstrap.min.css')
+    link(rel='stylesheet', href='/bower_components/owlcarousel/owl-carousel/owl.carousel.css')
+    link(rel='stylesheet', href='/bower_components/owlcarousel/owl-carousel/owl.theme.css')
+    link(rel='stylesheet', href='dist/css/index/main.min.css')
+    link(rel='stylesheet', href='/bower_components/font-awesome/css/font-awesome.min.css')
+  body
+    header.top-header
+        include ../partials/header/topline
+        include ../partials/header/menu
+    block content
+
+    include  ../partials/footer/footer
+
+    script(src='/bower_components/jquery/dist/jquery.min.js')
+    script(src='/bower_components/owlcarousel/owl-carousel/owl.carousel.js')
+    script(src='/js/index/carousel.js')
+    script(src='/js/index/click_listeners.js')

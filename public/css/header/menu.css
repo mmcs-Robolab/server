@@ -1,0 +1,123 @@
+.main-menu.fixed {
+    z-index: 999;
+    position:fixed;
+    top:0; left:0;
+    width:100%;
+    box-shadow: 0 0 8px 1px #292a2a;
+}
+
+.main-menu-btn {
+    float: left;
+    padding: 8px 15px 0;
+}
+
+.top-header {
+    background-color: #4AAAD2;
+    padding-bottom: 15px;
+}
+
+.logo {
+    display: block;
+    padding: 15px 0;
+    font-family: "SportsWorldRegular";
+    font-size: 68px;
+    text-align: center;
+    text-transform: uppercase;
+    color: #fff;
+}
+
+.logo:hover {
+    text-decoration: none;
+    color: #fff;
+}
+
+.logo:visited {
+    text-decoration: none;
+    color: #fff;
+}
+
+.logo:link {
+    text-decoration: none;
+}
+
+.main-menu {
+    background-color: #3797bf;
+    color: #fff;
+    margin-bottom: 40px;
+    text-align: center;
+}
+
+.main-menu a {
+    color: #fff;
+    padding: 15px;
+    display: block;
+    transition: all .25s;
+    -webkit-transition: all .25s;
+    -o-transition: all .25s;
+    -moz-transition: all .25s;
+}
+
+.main-menu a:hover {
+    background-color: #2787af;
+    text-decoration: none;
+}
+
+.main-menu a:link {
+    text-decoration: none;
+}
+
+.main-menu ul {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+    /*float: left;*/
+    text-transform: uppercase;
+    z-index: 12;
+}
+
+.main-menu ul li {
+    display: inline-block;
+}
+
+.top-contacts {
+    float: right;
+    font-size: 32px;
+    padding: 0 15px;
+    background-color: #2787af;
+    line-height: 50px;
+}
+
+h1 {
+    color: #fff;
+    text-transform: uppercase;
+    text-align: center;
+    font-family: "RobotoCondensedLight";
+}
+
+.slider-container img {
+    max-width: 100%;
+}
+
+.slider-container {
+    position: relative;
+}
+
+.next-btn, .prev-btn {
+    color: #fff;
+    font-size: 46px;
+    position: absolute;
+    z-index: 10;
+    cursor: pointer;
+    top: 34%;
+    background-color: rgba(255,255,255,.4);
+    padding: 0 25px;
+    border-radius: 50%;
+}
+
+.next-btn {
+    right: 20px;
+}
+
+.prev-btn {
+    left: 20px;
+}

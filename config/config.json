@@ -1,0 +1,20 @@
+{
+  "port": 3000,
+  "db": {
+    "host": "localhost",
+    "user": "root",
+    "password": "root",
+    "database": "robolab",
+    "multipleStatements": true,
+    "port": 3307
+  },
+  "session": {
+    "secret": "1234567890QWERTY",
+    "key": "session_cookie_name",
+    "resave": false,
+    "saveUninitialized": true,
+    "cookie": {
+      "maxAge": 3600000
+    }
+  }
+}
