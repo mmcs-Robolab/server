@@ -6,13 +6,16 @@ var gulp = require('gulp'),
     autoprefixer = require('gulp-autoprefixer');
 
 
-gulp.task('default', function () {
-    gulp.start('styles', 'images');
+gulp.task('default', function() {
+    gulp.start('styles', 'copyMedia', 'images');
 });
 
 // Css
 gulp.task('styles', function() {
-    return gulp.src(['public/css/**/*.css'])
+    return gulp.src(['public/css/fonts/*.css',
+                    'public/css/footer/*.css',
+                    'public/css/index/*.css',
+                    'public/css/header/*.css'])
         .pipe(concatCss("main.min.css"))
         .pipe(autoprefixer('last 2 version'))
         .pipe(minifycss())
@@ -20,6 +23,11 @@ gulp.task('styles', function() {
         .pipe(notify({ message: 'Styles task complete' }));
 });
 
+
+gulp.task('copyMedia', function() {
+   return gulp.src('public/css/media/*.css')
+       .pipe(gulp.dest('public/dist/css/media/'));
+});
 
 // Images
 gulp.task('images', function() {
