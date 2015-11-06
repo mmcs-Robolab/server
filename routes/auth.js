@@ -46,8 +46,6 @@ router.post('/', function(req, res, next) {
     });
 });
 
-
-
 router.post('/logout', function(req, res, next) {
     'use strict';
     req.session.destroy();
