@@ -24,6 +24,15 @@ function fillSessionInfo(session, data) {
     session.year = year;
 }
 
+/**
+ * @api {post} /auth/ Log In
+ * @apiName Login
+ * @apiGroup Auth
+ *
+ * @apiParam {String} login
+ * @apiParam {String} pass
+ */
+
 router.post('/', function(req, res, next) {
     'use strict';
     var login = req.body.login;
@@ -45,6 +54,12 @@ router.post('/', function(req, res, next) {
         }
     });
 });
+
+/**
+ * @api {post} /auth/logout Log Out
+ * @apiName Logout
+ * @apiGroup Auth
+ */
 
 router.post('/logout', function(req, res, next) {
     'use strict';
