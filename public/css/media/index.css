@@ -56,7 +56,9 @@
 
 /* Extra Small Devices, Phones */
 @media only screen and (max-width : 480px) {
-
+    .directions {
+        background-color: red !important;
+    }
 }
 
 /* Custom, iPhone Retina */
