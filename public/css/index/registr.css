@@ -1,0 +1,83 @@
+.form-title-row {
+    font-size: 30px;
+    text-transform: uppercase;
+    margin-bottom: 30px;
+    font-family: "RobotoRegular";
+    border-bottom: 1px solid #ccc;
+}
+
+
+.registration-block {
+    width: 600px;
+    padding: 10px 30px;
+    margin: 20px auto;
+    text-align: center;
+    background-color: #eee;
+    box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.5);
+}
+
+.row-input {
+    margin: 20px 0;
+}
+
+.row-input input {
+    color:  #5f5f5f;
+    box-sizing: border-box;
+    width: 230px;
+    box-shadow: 1px 2px 4px 0 rgba(0, 0, 0, 0.08);
+    padding: 12px 18px;
+    border: 1px solid #dbdbdb;
+}
+
+.row-input input:active,
+.row-input input:focus {
+    outline: none;
+    border: 1px solid #05c9ef;
+    transition: all .4s ease-out;
+}
+
+.signup-btn {
+    width: 200px;
+    margin: 10px auto;
+    padding: 10px 10px;
+    text-transform: uppercase;
+    color: #fff;
+    background-color: #2BC6A4;
+    cursor: pointer;
+    transition: all .4s ease-out;
+    font-size: 16px;
+    font-family: "RobotoCondensedRegular";
+}
+
+.signup-btn:hover {
+    /*background-color: #4feac8;*/
+    background-color: #2cc654;
+    color: #43484c;
+}
+
+.signup-btn:active {
+    background-color: #14af8d;
+}
+
+
+.error-empty {
+    border: 1px solid #f90000 !important;
+}
+
+.error-hint {
+    color: #93a1a1;
+    margin-left: 20px;
+    position: absolute;
+    margin-top: 15px;
+    text-transform: uppercase;
+    font-size: 10px;
+}
+
+
+/* Extra Small Devices, Phones */
+@media only screen and (max-width : 480px) {
+    .registration-block {
+        width: 300px;
+    }
+}
+
