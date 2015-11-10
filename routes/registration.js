@@ -1,7 +1,6 @@
 var router = require('express').Router();
 var passwordLib = require('../lib/password');
 var checkAuth = require('../lib/checkAuth');
-
 var modelUser = require('../model/user');
 
 router.get('/', function(req, res, next) {
@@ -15,6 +14,16 @@ router.get('/', function(req, res, next) {
     //}
 });
 
+/**
+ * @api {post} /registration
+ * @apiName Registrate
+ * @apiGroup Registration
+ *
+ * @apiParam {String} login
+ * @apiParam {String} pass
+ * @apiParam {String} name
+ * @apiParam {String} email
+ */
 router.post('/', function(req, res, next) {
     'use strict';
 
