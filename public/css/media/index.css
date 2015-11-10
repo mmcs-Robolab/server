@@ -48,6 +48,10 @@
         display: block;
     }
 
+    .info-item {
+        margin-top: 30px;
+    }
+
 }
 
 /* Extra Small Devices, Phones */

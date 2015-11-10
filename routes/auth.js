@@ -35,6 +35,7 @@ function fillSessionInfo(session, data) {
 
 router.post('/', function(req, res, next) {
     'use strict';
+    console.log(req.body);
     var login = req.body.login;
     var password = req.body.pass;
 

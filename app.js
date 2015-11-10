@@ -14,6 +14,7 @@ var config = require('./config');
 
 var routes = require('./routes/index');
 var auth = require('./routes/auth');
+var registration = require('./routes/registration');
 
 //===============================================
 
@@ -52,6 +53,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
 app.use('/auth', auth);
+app.use('/registration', registration);
 
 //===============================================
 

@@ -5,12 +5,21 @@
                 button.auth-btns.hidden-md.hidden-lg.hidden-sm
                     i.fa.fa-user
                 .top-links
-                    input.login-field(type = 'text' placeholder='Login')
-                    input.login-field(type = 'password' placeholder='Password')
-                    button.btn-login(alt = 'Войти')
-                        i.fa.fa-arrow-circle-right
-                    button.btn-registration(alt = 'Регистрация')
-                        i.fa.fa-user-plus
+                    if !auth
+                        input.login-field.login(type = 'text' placeholder='Login')
+                        input.login-field.password(type = 'password' placeholder='Password')
+                        button.btn-topline.btn-login(alt = 'Войти')
+                            i.fa.fa-arrow-circle-right
+                        button.btn-topline.btn-registration(alt = 'Регистрация')
+                            i.fa.fa-user-plus
+                    else
+                        button.btn-topline.btn-profile(title='Профиль')
+                            i.fa.fa-user
+                        button.btn-topline.btn-drive
+                            i.fa.fa-gamepad
+                        button.btn-topline.btn-logout
+                            i.fa.fa-sign-out
+
                 .soc-buttons
                     a(href='#')
                         i.fa.fa-vk
@@ -18,3 +27,6 @@
                         i.fa.fa-twitter
                     a(href='#')
                         i.fa.fa-facebook
+                    a(href='#')
+                        auth
+

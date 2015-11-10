@@ -2,20 +2,23 @@ var router = require('express').Router();
 var passwordLib = require('../lib/password');
 var checkAuth = require('../lib/checkAuth');
 
-var modelUser = require('model/user');
+var modelUser = require('../model/user');
 
-//router.get('/', function(req, res, next) {
-//    'use strict';
-//
-//    if (checkAuth(req, res, next)) {
-//        res.redirect('/'); // index
-//    } else {
-//        res.render('registration', {title: 'Регистрация'});
-//    }
-//});
+router.get('/', function(req, res, next) {
+    'use strict';
+
+    res.render('registration', {title: 'Регистрация'});
+    //if (checkAuth(req, res, next)) {
+    //    res.redirect('/'); // index
+    //} else {
+    //    res.render('registration', {title: 'Регистрация'});
+    //}
+});
 
 router.post('/', function(req, res, next) {
     'use strict';
+
+    console.log('registration');
 
     modelUser.create({
         login: req.body.login,

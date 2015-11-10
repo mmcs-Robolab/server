@@ -36,7 +36,8 @@
     margin-left: 5px;
 }
 
-.btn-login, .btn-registration {
+.btn-topline {
+    margin-right: 10px;
     vertical-align: middle;
     border: medium none;
     background-color: transparent;
@@ -44,13 +45,14 @@
     color: #fff;
 }
 
-.btn-login:hover, .btn-registration:hover {
+.btn-topline:hover {
     color: #b2b5bc;
 }
 
-.btn-login:active, .btn-registration:active {
+.btn-topline:active {
     color: #9ca0a8;
 }
+
 
 .soc-buttons {
     float: right;

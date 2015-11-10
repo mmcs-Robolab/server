@@ -3,11 +3,14 @@ var gulp = require('gulp'),
     minifycss = require('gulp-minify-css'),
     notify = require('gulp-notify'),
     imagemin = require('gulp-imagemin'),
-    autoprefixer = require('gulp-autoprefixer');
-
+    autoprefixer = require('gulp-autoprefixer'),
+    babel = require('gulp-babel'),
+    concat = require('gulp-concat'),
+    source = require('vinyl-source-stream'),
+    browserify = require('browserify');
 
 gulp.task('default', function() {
-    gulp.start('styles', 'copyMedia', 'images');
+    gulp.start('styles', 'copyMedia', 'images', 'browserify');
 });
 
 // Css
@@ -39,16 +42,23 @@ gulp.task('images', function() {
 
 // Scripts
 //gulp.task('scripts', function() {
-//    return gulp.src('src/scripts/**/*.js')
-//        .pipe(jshint('.jshintrc'))
-//        .pipe(jshint.reporter('default'))
+//    return gulp.src(['public/js/base/*.js','public/js/index/*.js'])
+//        .pipe(babel({
+//            presets: ['es2015']
+//        }))
 //        .pipe(concat('main.js'))
-//        .pipe(gulp.dest('dist/scripts'))
-//        .pipe(rename({ suffix: '.min' }))
-//        .pipe(uglify())
-//        .pipe(gulp.dest('dist/scripts'))
-//        .pipe(notify({ message: 'Scripts task complete' }));
+//        .pipe(gulp.dest('public/dist/js/index/'));
 //});
+
+
+gulp.task('browserify', function() {
+    return browserify('public/js/base/click_listeners.js')
+        .bundle()
+        .pipe(source('main.js'))
+        .pipe(gulp.dest('public/dist/js/index/'));
+});
+
+
 
 gulp.task('watch', function() {
 
@@ -57,6 +67,8 @@ gulp.task('watch', function() {
 
     // Watch image files
     gulp.watch('public/img/*', ['images']);
+
+    gulp.watch('public/js/base/*.js',['browserify']);
 
     //// Watch .js files
     //gulp.watch('src/scripts/**/*.js', ['scripts']);
