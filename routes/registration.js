@@ -15,7 +15,7 @@ router.get('/', function(req, res, next) {
 });
 
 /**
- * @api {post} /registration
+ * @api {post} /registration Registrate
  * @apiName Registrate
  * @apiGroup Registration
  *

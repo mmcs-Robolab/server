@@ -1,12 +1,16 @@
-var auth = require('./auth');
-var registration = require('./registration');
-
+var auth = require('../modules/auth');
+var registration = require('../modules/registration');
+var regForm = require('../modules/registrForm');
 //=============================================
 //               Media buttons
 //=============================================
 
 $('.auth-btns').click(function() {
     $(this).next().slideToggle();
+
+    $(this).next().children('button').click(function() {
+       $('.top-links').slideUp();
+    });
 });
 
 $('.main-menu-btn').click(function() {
@@ -30,36 +34,44 @@ $('.btn-logout').click(function() {
 });
 
 $('.btn-registration').click(function() {
-    //$('section.directions').fadeOut(100);
-    //$('section.main-content').fadeOut(1000);
-    //$('.top-header').animate({ height: window.innerHeight}, 1000);
-    //$('.header-menu-container').fadeOut(1000);
-    document.location.href = '/registration';
+    $('section.directions').fadeOut(100);
+    $('section.main-content').fadeOut(1000);
+    $('.top-header').animate({ height: window.innerHeight}, 1000);
+    $('.header-menu-container').fadeOut(1000);
+
+    $('.top-header').append(regForm);
+
+    setTimeout(function () {
+        $('.reg-form').fadeIn(500)
+    }, 1000);
+
+    $('.signup-btn').click(function() {
+        var inputs = getRegInputs();
+
+        var res = registration.checkInputs(inputs);
+
+        if(!res)
+            return;
+
+        var params = {
+            login: $('.reg-login').val(),
+            pass: $('.reg-pass').val(),
+            name: $('.reg-name').val(),
+            secondName: $('.reg-second-name').val(),
+            email: $('.reg-email').val()
+        };
+
+        registration.registrate(params);
+    });
+
+    $('.row-input input').keydown(function() {
+        $(this).removeClass('error-empty');
+        $(this).parent().children('span').fadeOut();
+    });
+
+    //document.location.href = '/registration';
 });
 
-$('.signup-btn').click(function() {
-    var inputs = getRegInputs();
-
-    var res = registration.checkInputs(inputs);
-
-    if(!res)
-        return;
-
-    var params = {
-        login: $('.reg-login').val(),
-        pass: $('.reg-pass').val(),
-        name: $('.reg-name').val(),
-        secondName: $('.reg-second-name').val(),
-        email: $('.reg-email').val()
-    };
-
-    registration.registrate(params);
-});
-
-$('.row-input input').keydown(function() {
-    $(this).removeClass('error-empty');
-    $(this).parent().children('span').fadeOut();
-});
 
 function getRegInputs() {
     var inputArr = [];

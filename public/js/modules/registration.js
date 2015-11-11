@@ -15,7 +15,7 @@ var reg = {
                 200: function () {
                     document.location.href = '/';
                 },
-                403: function () {
+                500: function () {
                     alert("Такой логин есть");
                 }
             }
