@@ -35,6 +35,9 @@
         margin: 10px auto;
     }
 
+    .main-menu {
+        padding: 8px 0;
+    }
 
     .main-menu ul {
         display: none;

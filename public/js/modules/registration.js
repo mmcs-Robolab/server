@@ -1,4 +1,3 @@
-
 var reg = {
     registrate: function(params) {
         $.ajax({

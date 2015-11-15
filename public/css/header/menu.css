@@ -12,7 +12,7 @@ button, button:active, button:focus {
 
 .main-menu-btn {
     float: left;
-    padding: 8px 15px 0;
+    padding: 0 15px 0;
 }
 
 .top-header {
