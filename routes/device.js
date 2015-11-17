@@ -20,13 +20,14 @@ router.post('/connectedRobots', function(req, res, next) {
 
     function connectionActions(socket) {
         socket.on('error', function(err) {
-           console.log(err);
+            console.log(err);
+           socket.emit('reconnectCustom');
         });
         socket.emit('connectedRobotsCli');
 
         socket.on('connectedRobotsServ', function (text) {
-            res.send(text);
             socketio.sockets.removeListener('connection', connectionActions);
+            res.send(text);
         })
     }
 
@@ -46,9 +47,15 @@ router.post('/connectedRobots', function(req, res, next) {
  *
  */
 
-router.get('/goForward', function(req, res, next) {
+router.post('/goForward', function(req, res, next) {
     var socketio = req.app.get('sock');
+    
     function connectionActions(socket) {
+        socket.on('error', function(err) {
+            console.log(err);
+            socket.emit('reconnectCustom');
+        });
+
         socket.emit('goForwardCli');
 
         socket.on('goForwardServ', function (text) {
