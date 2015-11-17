@@ -18,6 +18,7 @@ $('.main-menu-btn').click(function() {
 });
 
 
+
 //=============================================
 //               Login/registration
 //=============================================
@@ -26,7 +27,18 @@ $('.btn-login').click(function() {
     var login = $('.login').val();
     var pass = $('.password').val();
 
-    auth.authentificate(login, pass);
+    //auth.authentificate(login, pass);
+    //for(var i = 0; i < 5; ++i) {
+        $.ajax({
+            method: "POST",
+            url: "/device/connectedRobots",
+            success: function(result) {
+                alert(result);
+            }
+        });
+    //}
+
+
 });
 
 $('.btn-logout').click(function() {
