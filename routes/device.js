@@ -49,7 +49,7 @@ router.post('/connectedRobots', function(req, res, next) {
 
 router.post('/goForward', function(req, res, next) {
     var socketio = req.app.get('sock');
-    
+
     function connectionActions(socket) {
         socket.on('error', function(err) {
             console.log(err);

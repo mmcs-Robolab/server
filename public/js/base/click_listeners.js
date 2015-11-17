@@ -27,6 +27,7 @@ $('.btn-login').click(function() {
     var pass = $('.password').val();
 
     //auth.authentificate(login, pass);
+
     for(var i = 0; i < 10; ++i) {
         $.ajax({
             method: "POST",
