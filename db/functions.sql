@@ -16,7 +16,7 @@ create function User_create(
 begin
     declare exit handler for sqlexception return -1;
 
-    insert into users (login, pass, name, email)
+    insert into users_main (login, pass, name, email)
         values (pLogin, pPassword, pName, pEMail);
 
     return last_insert_id();
@@ -30,10 +30,18 @@ create procedure User_getInfo(
     in pLoginOrMail text charset utf8
 ) no sql
 begin
-    select users.* -- id, login, pass, name, email
-        from users
+    select users_main.* -- id, login, pass, name, email
+        from users_main
         where
-            (pUserID = 0 or users.id = pUserID)
-            and pLoginOrMail in (users.login, users.email)
+            (pUserID = 0 or users_main.id = pUserID)
+            and pLoginOrMail in (users_main.login, users_main.email)
         limit 1;
 end//
+
+# drop procedure if exists Articles_getInfo;
+# create procedure User_getInfo() no sql
+#     begin
+#         select posts.* -- id, login, pass, name, email
+#         from posts
+#         limit 4;
+#     end//

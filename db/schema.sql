@@ -2,7 +2,7 @@
 --  label: profile
 -- ----------------------
 
-create table if not exists `users` (
+create table if not exists `users_main` (
     `id`        int(11)                     not null auto_increment,
     `login`     varchar(50) charset utf8    not null,
     `pass`      char(50) charset utf8       not null,
