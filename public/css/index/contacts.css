@@ -1,0 +1,50 @@
+.main-contacts {
+    padding: 50px 0;
+}
+
+.contacts-title {
+    margin-bottom: 80px;
+    text-align: center;
+    font-size: 30px;
+    text-transform: uppercase;
+    font-family: RobotoRegular;
+}
+
+.contacts-map {
+    /*margin-left: 30px;*/
+    display: inline-block;
+}
+
+.contacts-adress-title {
+    display: inline-block;
+    font-size: 15px;
+    margin-left: 20px;
+    vertical-align: top;
+    font-weight: bold;
+}
+
+.contacts-adress {
+    display: inline-block;
+    font-size: 15px;
+    margin-left: 20px;
+    vertical-align: top;
+}
+
+.contacts-email-title {
+    display: inline-block;
+    font-size: 15px;
+    margin-left: 20px;
+    vertical-align: top;
+    font-weight: bold;
+}
+
+.contacts-email {
+    display: inline-block;
+    font-size: 15px;
+    margin-left: 20px;
+    vertical-align: top;
+}
+
+.contacts-row {
+    margin-top: 10px;
+}

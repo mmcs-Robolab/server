@@ -1,5 +1,5 @@
 .main-content {
-    padding: 70px 0;
+    padding: 100px 0;
 }
 
 .blog-item {
@@ -7,8 +7,24 @@
 }
 
 
+.blog-item-wrap {
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all ease-out .2s;
+}
+
+.blog-item-wrap:hover {
+    border: 1px solid #05c9ef;
+    box-shadow: 0px 0px 2px 0px #05c9ef;
+    /*background-color: #bdbdb4;*/
+}
+
+
 .blog-item img {
-    max-width: 100%;
+    /*max-width: 220px;*/
+    /*max-height: 180px;*/
+    width: 220px;
+    height: 150px;
     margin-bottom: 20px;
 }
 
@@ -16,12 +32,10 @@
 .blog-item h3 {
     text-transform: uppercase;
     font-family: "RobotoCondensedRegular";
-    margin-bottom: 10px;
 }
 
 .blog-item-text {
-    margin-top: 50px;
-    text-align: left;
+    text-align: center;
     font-family: "RobotoLight";
     font-size: 15px;
 }
@@ -36,4 +50,48 @@
     border-radius: 5px;
     background-color: #eee;
     /*margin-top: 30px;*/
+}
+
+.btn-all-articles {
+    text-align: center;
+    text-transform: uppercase;
+    color: #fff;
+    float: right;
+    margin-bottom: 20px;
+    margin-top: 10px;
+    margin-right: 50px;
+    border-radius: 3px;
+    padding: 3px 18px;
+    background-color: #5bb4fb;
+    font-size: 28px;
+    cursor: pointer;
+}
+
+.news-container {
+    margin-top: 10px;
+}
+
+.row-news {
+    margin-top: 10px;
+}
+
+.news-title {
+    margin-bottom: 80px;
+    text-align: center;
+    font-size: 30px;
+    text-transform: uppercase;
+    font-family: RobotoRegular;
+}
+
+.blog-item-title {
+    margin-bottom: 20px;
+    font-size: 12px;
+}
+
+.text-al-left {
+    text-align: left;
+}
+
+.text-al-center {
+    text-align: center;
 }

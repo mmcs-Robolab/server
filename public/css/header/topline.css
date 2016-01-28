@@ -1,3 +1,7 @@
+.header-container {
+    /*margin-left: 40px;*/
+    /*margin-right: 20px;*/
+}
 
 .header-topline {
     background-color: #43484C;
@@ -37,17 +41,21 @@
 }
 
 .btn-topline {
-    /*margin-right: 10px;*/
+    /*margin-right: 15px;*/
     vertical-align: middle;
     border: medium none;
     background-color: transparent;
     font-size: 30px;
     color: #fff;
+    cursor: pointer;
 }
+
+
 
 .btn-topline:hover {
     color: #b2b5bc;
 }
+
 
 .btn-topline:active {
     color: #9ca0a8;
@@ -69,3 +77,61 @@
     font-size: 26px;
     color: #fff;
 }
+
+
+/*===================== Topline menu =====================*/
+.topline-menu {
+    background-color: #43484c;
+    margin-top: -9px;
+    margin-bottom: -9px;
+    color: #fff;
+    text-align: center;
+}
+
+.topline-menu a {
+    /*border-left: 1px solid  #8b8c8d;*/
+
+    vertical-align: middle;
+    border: medium none;
+    background-color: transparent;
+    font-size: 30px;
+    color: #fff;
+    padding: 8px 20px;
+    display: block;
+    transition: all .25s;
+    -webkit-transition: all .25s;
+    -o-transition: all .25s;
+    -moz-transition: all .25s;
+}
+
+.btn-logout {
+    /*border-right: 1px solid  #8b8c8d;*/
+}
+
+.topline-menu a:hover {
+    background-color: #8b8c8d;
+    text-decoration: none;
+}
+
+.topline-menu a:link {
+    text-decoration: none;
+}
+
+.topline-menu ul {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+    /*float: left;*/
+    text-transform: uppercase;
+    z-index: 12;
+}
+
+.topline-menu ul li {
+    display: inline-block;
+}
+
+.topline-menu li.active > a {
+    background-color: #8b8c8d;
+}
+
+/*===================================================*/

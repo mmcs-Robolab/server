@@ -78,6 +78,10 @@
     border: 1px solid #f90000 !important;
 }
 
+.error-incorrect {
+    border: 1px solid #f5c031 !important;
+}
+
 .error-hint {
     color: #93a1a1;
     margin-left: 20px;

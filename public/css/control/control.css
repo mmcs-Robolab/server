@@ -1,0 +1,147 @@
+textarea {
+    width: 100%;
+    resize: none;
+    height: 500px;
+}
+
+textarea:active {
+    outline: none;
+}
+
+textarea:focus {
+    outline: none;
+}
+
+.control-container {
+    height: 100%;
+    padding-top: 30px;
+    padding-bottom: 50px;
+    background-color: #4AAAD2;
+}
+
+.code-area {
+    width: 100%;
+    height: 600px;
+}
+
+.video-area {
+    height: 500px;
+    border: 1px solid black;
+}
+
+.editor-panel {
+    border-radius: 3px 3px 0 0;
+    padding: 10px;
+    background-color: #3c3f41;
+    text-align: right;
+    border-bottom: 1px solid #171717;
+}
+
+.video-panel {
+    border-radius: 3px 3px 0 0;
+    padding: 10px;
+    background-color: #3c3f41;
+    text-align: left;
+    border-bottom: 1px solid #171717;
+}
+
+.theme-select {
+    margin-right: 15px;
+}
+
+.panel-info {
+    color: #aeaeae;
+    font-size: 13px;
+    margin-right: 5px;
+}
+
+.btn-icon {
+    display: inline-block;
+    vertical-align: middle;
+    border: medium none;
+    background-color: transparent;
+    font-size: 20px;
+    color: #fff;
+    cursor: pointer;
+}
+
+.btn-icon:hover {
+    color: #b2b5bc;
+}
+
+.btn-icon:active {
+    color: #9ca0a8;
+}
+
+.btn-gamepad {
+    display: inline-block;
+    float: left;
+    /*margin-left: 0;*/
+    /*left: 10px;*/
+}
+
+.editor-prop {
+    display: inline-block;
+    padding: 4px;
+    /*right: 10px;*/
+}
+
+.editor-bottom-panel {
+    border-radius: 0 0 3px 3px;
+    padding: 10px;
+    background-color: #3c3f41;
+    text-align: right;
+    border-top: 1px solid #171717;
+}
+
+.btn-compile {
+    display: inline-block;
+    padding: 7px;
+    border: none;
+    color: #fff;
+    border-radius: 2px;
+    text-transform: uppercase;
+    font-size: 11px;
+    cursor: pointer;
+    background-color: #00cd83;
+}
+
+.btn-compile:hover {
+    background-color: #03faa1;
+}
+
+.btn-compile:active {
+    background-color: #03ad70;
+}
+
+.file-loader-btn {
+    border: medium none;
+    background-color: transparent;
+    font-size: 20px;
+    color: #fff;
+    cursor: pointer;
+    float: left;
+    display: inline-block;
+}
+
+.file-loader-btn:hover {
+    color: #b2b5bc;
+}
+
+.file-loader-btn:active {
+    color: #9ca0a8;
+}
+
+.file-loader-input {
+    margin-top: 6px;
+    width: 230px;
+    font-size: 15px;
+    color: #fff;
+    float: left;
+    cursor: pointer;
+}
+
+input[type=file] {
+    line-height: 10px;
+    display: none;
+}

@@ -8,18 +8,32 @@
                     if !auth
                         input.login-field.login(type = 'text' placeholder='Login')
                         input.login-field.password(type = 'password' placeholder='Password')
-                        button.btn-topline.btn-login(alt = 'Войти')
-                            i.fa.fa-arrow-circle-right
-                        button.btn-topline.btn-registration(alt = 'Регистрация')
-                            i.fa.fa-user-plus
-                    else
-                        button.btn-topline.btn-profile(title='Профиль')
-                            i.fa.fa-user
-                        button.btn-topline.btn-drive
-                            i.fa.fa-gamepad
-                        button.btn-topline.btn-logout
-                            i.fa.fa-sign-out
+                        span.hint--bottom(data-hint='Войти')
+                            button.btn-topline.btn-login(alt = 'Войти')
+                                i.fa.fa-arrow-circle-right
 
+                        span.hint--bottom(data-hint='Регистраниция')
+                            button.btn-topline.btn-registration(alt = 'Регистрация')
+                                i.fa.fa-user-plus
+                    else
+                        nav.topline-menu
+                            ul
+                                li
+                                    span.hint--bottom(data-hint='Главная')
+                                        a.btn-home(href="/")
+                                            i.fa.fa-home
+                                li
+                                    span.hint--bottom(data-hint='Профиль')
+                                        a.btn-profile(href="#")
+                                            i.fa.fa-user
+                                li
+                                    span.hint--bottom(data-hint='Удаленный доступ')
+                                        a.btn-drive(href="/device")
+                                            i.fa.fa-globe
+                                li
+                                    span.hint--bottom(data-hint='Выход')
+                                        a.btn-logout(href="#")
+                                            i.fa.fa-sign-out
                 .soc-buttons
                     a(href='#')
                         i.fa.fa-vk

@@ -2,6 +2,8 @@ doctype html
 html
   head
     title= title
+    meta(charset="utf-8")
+    meta(http-equiv="X-UA-Compatible", content="IE=edge")
     meta(name="viewport", content="width=device-width, initial-scale=1")
     link(rel='stylesheet', href='/bower_components/owlcarousel/owl-carousel/owl.carousel.css')
     link(rel='stylesheet', href='/bower_components/owlcarousel/owl-carousel/owl.theme.css')
@@ -9,6 +11,8 @@ html
     link(rel='stylesheet', href='dist/css/index/main.min.css')
     link(rel='stylesheet', href='dist/css/media/index.css')
     link(rel='stylesheet', href='/bower_components/font-awesome/css/font-awesome.min.css')
+    link(rel='stylesheet', href='/bower_components/hint.css/hint.min.css')
+    //link(href='/img/favicon.ico', rel='shortcut icon', type='image/x-icon')
 
   body
     header.top-header
@@ -20,6 +24,9 @@ html
 
     script(src='/bower_components/jquery/dist/jquery.min.js')
     script(src='/bower_components/owlcarousel/owl-carousel/owl.carousel.js')
-    script(src='/dist/js/index/main.js')
+
+
+    script(src='/dist/js/base/main.js')
     script(src='/js/base/carousel.js')
+    script(src='/dist/js/index/index.js')
    // script(src='/js/base/click_listeners.js')

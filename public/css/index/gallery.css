@@ -1,0 +1,122 @@
+
+.main-gallery {
+    background-color: #242424;
+    padding: 50px 0 50px 0;
+    /*height: 700px;*/
+}
+
+.thumbs {
+    width: 1000px;
+    height: 97px;
+    margin: 0 auto;
+    /*margin-top: 10px;*/
+    padding: 5px;
+    border-radius: 2px;
+    background-color: #353535;
+}
+
+.thumb {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.gal-img-lg {
+    display: block;
+    margin: 0 auto;
+    /*display: block;*/
+    width: 1000px;
+    height: 650px;
+}
+
+.gallery-img-lg-wrapper:hover .gal-btn-left {
+    opacity: 1;
+}
+
+.gallery-img-lg-wrapper:hover .gal-btn-right {
+    opacity: 1;
+}
+
+.gal-img-sm {
+    margin: 5px 5px 5px 5px;
+    width: 100px;
+    height: 80px;
+    border: 2px solid #000;
+    transition: all .3s ease-out;
+    cursor: pointer;
+}
+
+.gal-img-sm:hover {
+    border: 2px solid #05c9ef;
+}
+
+.gal-img-sm-active {
+    border: 2px solid #05c9ef;
+}
+
+.gal-btn-left {
+    opacity: 0;
+    left: 70px;
+    color: #fff;
+    font-size: 46px;
+    position: absolute;
+    z-index: 10;
+    cursor: pointer;
+    top: 50%;
+    background-color: #141414;
+    padding: 0 25px;
+    border-radius: 0 50% 50% 0;
+    transition: all .3s ease-out;
+}
+
+.gal-btn-right {
+    opacity: 0;
+    right: 70px;
+    color: #fff;
+    font-size: 46px;
+    position: absolute;
+    z-index: 10;
+    cursor: pointer;
+    top: 50%;
+    background-color: #141414;
+    padding: 0 25px;
+    border-radius: 50% 0 0 50%;
+    transition: all .3s ease-out;
+}
+
+.thumbs-btn-left {
+    float: left;
+    cursor: pointer;
+    margin-top: 5px;
+    display: inline-block;
+
+    border-top: 40px solid transparent;
+    border-right: 15px solid #afafaf;
+    border-bottom: 40px solid transparent;
+    transition: all .3s ease-out;
+    margin-right: 10px;
+}
+
+.thumbs-btn-left:hover {
+  border-right: 15px solid #f6f6f6;
+}
+
+.thumbs-btn-right {
+    float: right;
+    cursor: pointer;
+    margin-top: 5px;
+    display: inline-block;
+    border-top: 40px solid transparent;
+    border-left: 15px solid #afafaf;
+    border-bottom: 40px solid transparent;
+    transition: all .3s ease-out;
+    margin-left: 10px;
+}
+
+.thumbs-btn-right:hover {
+    border-left: 15px solid #f6f6f6;
+}
+
+.thumbs-container {
+    margin-left: 30px;
+    display: inline-block;
+}
