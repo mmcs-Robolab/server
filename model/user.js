@@ -3,7 +3,6 @@ var db = require('../lib/database');
 var findUser = function(login, callback) {
     'use strict';
 
-    console.log(login);
     var sql = 'call User_getInfo(0, ?)';
     db.query(sql, [login], callback);
 };

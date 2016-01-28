@@ -2,6 +2,8 @@ var router = require('express').Router();
 var passwordLib = require('../lib/password');
 var checkAuth = require('../lib/checkAuth');
 var modelUser = require('../model/user');
+var nodemailer = require('nodemailer');
+var config = require('../config');
 
 router.get('/', function(req, res, next) {
     'use strict';
@@ -27,8 +29,6 @@ router.get('/', function(req, res, next) {
 router.post('/', function(req, res, next) {
     'use strict';
 
-    console.log('registration');
-
     modelUser.create({
         login: req.body.login,
         pass: passwordLib.hash(req.body.pass),
@@ -40,6 +40,30 @@ router.post('/', function(req, res, next) {
         if (error) {
             return next(error);
         }
+
+        var smtpConfig = config.get('smtp');
+        var transporter = nodemailer.createTransport(smtpConfig);
+
+        var mailOptions = {
+            from: 'Robolab <piimka94@gmail.com>',
+            to: req.body.email,
+            subject: 'Регистрация в сервисе ROBOLAB',
+            text: 'Здравствуйте, ' + req.body.name + '! ' +
+            'Благодарим вас за регистрацию в сервисе Robolab.' +
+            'Login: ' + req.body.login +
+            'Password: ' + req.body.pass,
+            html: '<p>Здравствуйте, ' + req.body.name + '! ' +
+            'Благодарим вас за регистрацию в сервисе Robolab.' + '<br>' +
+            'Login: ' + req.body.login +  '<br>' +
+            'Password: ' + req.body.pass + '</p>'
+        };
+
+        transporter.sendMail(mailOptions, function(error, info){
+            if(error){
+                console.log(error);
+            }
+            console.log('Message sent: ' + info.response);
+        });
 
         res.send(200);
     });

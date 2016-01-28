@@ -1,27 +1,15 @@
 var router = require('express').Router();
 var passwordLib = require('../lib/password');
 var modelUser = require('../model/user');
+var checkAuth = require('../lib/checkAuth');
 
 function fillSessionInfo(session, data) {
     'use strict';
 
     session.userId = data.id;
     session.username = data.name;
-
-    var fullDate = new Date();
-    var day = fullDate.getDate();
-    var month = fullDate.getMonth() + 1;
-    var year = fullDate.getFullYear();
-
-    if(Math.floor(day / 10) == 0)
-        day = '0' + fullDate.getDate();
-
-    if(Math.floor(month / 10) == 0)
-        month = '0' + (fullDate.getMonth() + 1);
-
-    session.day = day;
-    session.month = month;
-    session.year = year;
+    session.email = data.email;
+    session.login = data.login;
 }
 
 /**
@@ -35,7 +23,6 @@ function fillSessionInfo(session, data) {
 
 router.post('/', function(req, res, next) {
     'use strict';
-    console.log(req.body);
     var login = req.body.login;
     var password = req.body.pass;
 
@@ -54,6 +41,35 @@ router.post('/', function(req, res, next) {
             res.send(403);
         }
     });
+});
+
+
+/**
+ * @api {get} /auth/userInfo User info
+ * @apiName UserInfo
+ * @apiGroup Auth
+ *
+ */
+
+router.get('/userInfo', function(req, res, next) {
+
+    if (checkAuth(req, res, next)) {
+        var resData = {};
+        if(req.session.userId != undefined)
+        {
+            resData = {
+                userId: req.session.userId,
+                username: req.session.username,
+                email: req.session.email,
+                login: req.session.login
+            }
+        }
+        res.send(resData);
+    } else {
+        res.send(418);
+    }
+
+
 });
 
 /**

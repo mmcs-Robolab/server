@@ -1,11 +1,64 @@
 var router = require('express').Router();
+var fs = require('fs');
+var checkAuth = require('../lib/checkAuth');
 
-router.post('/', function(req, res, next) {
+
+router.get('/', function(req, res, next) {
     'use strict';
 
-    console.log('registration');
-    res.render('index');
+    if (checkAuth(req, res, next)) {
+        res.render('control', {title: "Управление", username: req.session.username, auth: true});
+    } else {
+
+        // TODO auth page
+        res.redirect('/');
+    }
+
+
 });
+
+
+/**
+ * @api {post} /device/list Connected devices
+ * @apiName Connected devices
+ * @apiGroup Devices
+ *
+ */
+
+router.get('/list', function(req, res, next) {
+    var obj = JSON.parse(fs.readFileSync('./devices/devices.json', 'utf8'));
+    res.send(obj);
+});
+
+
+/**
+ * @api {post} /device/setDeviceState Set state
+ * @apiName Set state
+ * @apiGroup Devices
+ *
+ * @apiParam {String} deviceID
+ * @apiParam {String} newState
+ */
+
+router.post('/setDeviceState', function(req, res, next) {
+    var id = parseInt(req.body.id);
+    var state = parseInt(req.body.state);
+
+    fs.readFile('./devices/devices.json', 'utf8', function(err, content) {
+        var obj = JSON.parse(content);
+
+        obj["devices"][id].state = state;
+        fs.writeFile("./devices/devices.json", JSON.stringify(obj), function (err) {
+            if(!err) {
+                res.send(200);
+            } else res.send(500);
+
+        });
+    });
+
+});
+
+
 
 /**
  * @api {post} /device/connectedRobots Connected robots
@@ -14,62 +67,71 @@ router.post('/', function(req, res, next) {
  *
  */
 
-router.post('/connectedRobots', function(req, res, next) {
+router.get('/connectedRobots', function(req, res, next) {
    'use strict';
-    var socketio = req.app.get('sock');
 
-    function connectionActions(socket) {
-        socket.on('error', function(err) {
-            console.log(err);
-           socket.emit('reconnectCustom');
-        });
-        socket.emit('connectedRobotsCli');
+    var obj = JSON.parse(fs.readFileSync('./devices/robots.json', 'utf8'));
+    res.send(obj);
 
-        socket.on('connectedRobotsServ', function (text) {
-            socketio.sockets.removeListener('connection', connectionActions);
-            res.send(text);
-        })
-    }
-
-    if(Object.keys(socketio.engine.clients).length) {
-        socketio.sockets.on('connection', connectionActions);
-        socketio.emit('reconnectCustom');
-    } else {
-        res.send('0');
-    }
+    //var socketio = req.app.get('sock');
+    //
+    //function connectionActions(socket) {
+    //    socket.on('error', function(err) {
+    //        console.log(err);
+    //       socket.emit('reconnectCustom');
+    //    });
+    //    socket.emit('connectedRobotsCli');
+    //
+    //    socket.on('connectedRobotsServ', function (text) {
+    //        socketio.sockets.removeListener('connection', connectionActions);
+    //        res.send(text);
+    //    })
+    //}
+    //
+    //if(Object.keys(socketio.engine.clients).length) {
+    //    socketio.sockets.on('connection', connectionActions);
+    //    socketio.emit('reconnectCustom');
+    //} else {
+    //    res.send('0');
+    //}
 });
 
 
-/**
- * @api {post} /device/goForward Go forward
- * @apiName Go forward
- * @apiGroup Robots
- *
- */
 
-router.post('/goForward', function(req, res, next) {
-    var socketio = req.app.get('sock');
+router.post('/setX', function(req, res, next) {
 
-    function connectionActions(socket) {
-        socket.on('error', function(err) {
-            console.log(err);
-            socket.emit('reconnectCustom');
+    var id = parseInt(req.body.id);
+    var x = parseInt(req.body.state);
+
+    fs.readFile('./devices/robots.json', 'utf8', function(err, content) {
+        var obj = JSON.parse(content);
+
+        obj["robots"][id].x = x;
+        fs.writeFile("./devices/robots.json", JSON.stringify(obj), function (err) {
+            if(!err) {
+                res.send(200);
+            } else res.send(500);
+
         });
+    });
+});
 
-        socket.emit('goForwardCli');
+router.post('/setY', function(req, res, next) {
 
-        socket.on('goForwardServ', function (text) {
-            res.send(text);
-            socketio.sockets.removeListener('connection', connectionActions);
-        })
-    }
+    var id = parseInt(req.body.id);
+    var y = parseInt(req.body.state);
 
-    if(Object.keys(socketio.engine.clients).length) {
-        socketio.sockets.on('connection', connectionActions);
-        socketio.emit('reconnectCustom');
-    } else {
-        res.send('0');
-    }
+    fs.readFile('./devices/robots.json', 'utf8', function(err, content) {
+        var obj = JSON.parse(content);
+
+        obj["robots"][id].y = y;
+        fs.writeFile("./devices/robots.json", JSON.stringify(obj), function (err) {
+            if(!err) {
+                res.send(200);
+            } else res.send(500);
+
+        });
+    });
 });
 
 module.exports = router;
