@@ -10,13 +10,19 @@ html
         link(rel='stylesheet', href='/bower_components/hint.css/hint.min.css')
 body
     .message-container
-
     header.top-header
         include ../partials/header/topline
     block content
     include  ../partials/footer/footer
     script(src='/bower_components/jquery/dist/jquery.min.js')
     script(src='/dist/js/base/main.js')
+    script(src='/dist/js/vendor/three.js')
+    script(src='/js/control/orbitControls.js')
+    script(src='/js/control/TGALoader.js')
+    script(src='/js/control/OBJLoader.js')
+    script(src='/js/control/TransformControls.js')
     script(src='/bower_components/ace-builds/src-noconflict/ace.js')
     script(src='/bower_components/ace-builds/src-noconflict/ext-language_tools.js')
-    script(src='/dist/js/control/control.js')
+    script(src='/dist/js/control/virtual_model.js')
+
+//include  ../partials/footer/footer

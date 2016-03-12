@@ -12,6 +12,7 @@
     "secret": "1234567890QWERTY",
     "key": "session_cookie_name",
     "resave": false,
+    "rolling" : true,
     "saveUninitialized": true,
     "cookie": {
       "maxAge": 3600000

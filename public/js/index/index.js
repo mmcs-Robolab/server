@@ -2,8 +2,19 @@ var article = require('../modules/article');
 var math = require('../modules/math');
 
 $('.topline-menu li').first().addClass('active');
+$('body').sectionScroll();
 
+$('.menu-link').click(function(e) {
+    var href = $(this).attr("href"),
+        offsetTop = $(href).offset().top;
 
+    $('html, body').stop().animate({
+        scrollTop: offsetTop
+    }, 1000, function(){
+        //$parent_elem.trigger('scrolled-to-section').stop();
+    });
+    e.preventDefault();
+});
 
 // =================================================
 //                  Articles block

@@ -18,12 +18,23 @@ var auth = {
             }
         });
     },
+
     logout: function() {
         $.ajax({
-           method: "POST",
+            method: "POST",
             url: "/auth/logout",
             success: function() {
                 location.reload(true);
+            }
+        });
+    },
+
+    getCurrentUserInfo: function() {
+        $.ajax({
+            method: "GET",
+            url: "auth/userInfo",
+            success: function(data) {
+                return data;
             }
         });
     }

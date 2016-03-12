@@ -36,17 +36,16 @@ config = {
         // Example mail config
         // Visit http://support.ghost.org/mail for instructions
         // ```
-        //  mail: {
-        //      transport: 'SMTP',
-        //      options: {
-        //          service: 'Mailgun',
-        //          auth: {
-        //              user: '', // mailgun username
-        //              pass: ''  // mailgun password
-        //          }
-        //      }
-        //  },
-        // ```
+        mail: {
+          transport: 'SMTP',
+          options: {
+              service: 'Gmail',
+              auth: {
+                  user: 'piimka94@gmail.com', // mailgun username
+                  pass: 'a1076410'  // mailgun password
+              }
+          }
+        },
 
         // #### Database
         // Ghost supports sqlite3 (default), MySQL & PostgreSQL

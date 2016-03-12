@@ -12,7 +12,7 @@ var gulp = require('gulp'),
     buffer = require('vinyl-buffer');
 
 gulp.task('default', function() {
-    gulp.start('styles', 'copyMedia', 'images', 'browserify-base', 'browserify-control', 'browserify-index');
+    gulp.start('styles', 'copyMedia', 'images', 'browserify-base', 'browserify-control', 'browserify-virtual', 'browserify-index');
 });
 
 // Css
@@ -83,10 +83,19 @@ gulp.task('browserify-control', function() {
         .pipe(gulp.dest('public/dist/js/control/'));
 });
 
+gulp.task('browserify-virtual', function() {
+    return browserify('public/js/control/virtual_model.js')
+        .bundle()
+        .pipe(source('virtual_model.js'))
+        .pipe(buffer())
+        .pipe(uglify())
+        .pipe(gulp.dest('public/dist/js/control/'));
+});
+
 gulp.task('watch', function() {
 
     // Watch .css files
-    gulp.watch(['public/css/**/*.css'], ['styles']);
+    gulp.watch(['public/css/**/*.css'], ['styles', 'copyMedia']);
 
     // Watch image files
     gulp.watch('public/img/*', ['images']);
@@ -94,9 +103,9 @@ gulp.task('watch', function() {
     //// Watch .js files
 
     gulp.watch('public/js/base/*.js',['browserify-base']);
-    gulp.watch('public/js/control/*.js',['browserify-control']);
+    gulp.watch('public/js/control/*.js',['browserify-control', 'browserify-virtual']);
     gulp.watch('public/js/index/*.js',['browserify-index']);
-    gulp.watch('public/js/modules/*.js',['browserify-base','browserify-control', 'browserify-index']);
+    gulp.watch('public/js/modules/*.js',['browserify-base','browserify-control', 'browserify-index', 'browserify-virtual']);
 
 
 

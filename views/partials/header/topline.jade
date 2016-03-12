@@ -9,11 +9,11 @@
                         input.login-field.login(type = 'text' placeholder='Login')
                         input.login-field.password(type = 'password' placeholder='Password')
                         span.hint--bottom(data-hint='Войти')
-                            button.btn-topline.btn-login(alt = 'Войти')
+                            button.btn-topline.btn-login
                                 i.fa.fa-arrow-circle-right
 
                         span.hint--bottom(data-hint='Регистраниция')
-                            button.btn-topline.btn-registration(alt = 'Регистрация')
+                            button.btn-topline.btn-registration
                                 i.fa.fa-user-plus
                     else
                         nav.topline-menu
@@ -31,6 +31,10 @@
                                         a.btn-drive(href="/device")
                                             i.fa.fa-globe
                                 li
+                                    span.hint--bottom(data-hint='Виртуальная модель')
+                                        a.btn-drive(href="/virtual_model")
+                                            i.fa.fa-cubes
+                                li
                                     span.hint--bottom(data-hint='Выход')
                                         a.btn-logout(href="#")
                                             i.fa.fa-sign-out
@@ -42,5 +46,5 @@
                     a(href='#')
                         i.fa.fa-facebook
                     a(href='#')
-                        auth
+
 

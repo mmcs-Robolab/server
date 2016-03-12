@@ -2,7 +2,6 @@ var express = require('express');
 var router = express.Router();
 var checkAuth = require('../lib/checkAuth');
 var article = require('../model/article');
-var utf = require('utf8');
 var fs = require('fs');
 
 /* GET home page. */

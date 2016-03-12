@@ -16,6 +16,7 @@ var routes = require('./routes/index');
 var auth = require('./routes/auth');
 var registration = require('./routes/registration');
 var device = require('./routes/device');
+var virtual_model = require('./routes/virtual_model');
 //===============================================
 
 var app = express();
@@ -55,6 +56,7 @@ app.use('/', routes);
 app.use('/auth', auth);
 app.use('/registration', registration);
 app.use('/device', device);
+app.use('/virtual_model', virtual_model);
 
 app.use( '/articles', ghost({
   config: path.join(__dirname, 'ghost-app/config.js')

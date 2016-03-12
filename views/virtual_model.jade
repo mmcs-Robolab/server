@@ -1,0 +1,69 @@
+extends layout/virtual-layout
+
+block content
+    .col-md-12.control-container
+        .row
+            .col-md-7.drive-col
+                .editor-container
+                    .editor-panel
+
+                        .editor-prop
+                            span.panel-info Тема
+                            select.theme-select
+                                option(value="monokai") Monokai
+                                option(value="tomorrow") Tomorrow
+                                option(value="twilight") Twilight
+
+                            span.panel-info Язык
+                            select.lang-select
+                                option(value="csharp") C#
+                                option(value="pascal") Pascal
+                    #editor.code-area
+                    .editor-bottom-panel
+                        input(type="file").file-loader-input
+                        button.file-loader-btn
+                            i.fa.fa-cloud-upload
+                        .btn-compile компиляция
+
+
+            .col-md-5
+                .video-panel
+                    span.hint--bottom(data-hint='Состояние сервера')
+                        .server-state
+                            i.fa.fa-power-off
+
+                    .btn-view-mode.btn-icon
+                        i.fa.fa-play
+                    .btn-editor-mode.btn-icon
+                        i.fa.fa-pencil-square-o
+                    .btn-add-cube.btn-add-cube-disabled.btn-icon
+                        i.fa.fa-cube
+                #graph-container
+                .log-container
+                    .prop-robot-container
+                        span
+                            | Всякие датчики робота
+                    .prop-container
+                        span.prop-title-width
+                            | Ширина:
+                        input.input-prop.input-width(type='number', size='5', name='num', min='1', max='50', value='1', step='1')
+                        span.prop-title-height
+                            | Высота:
+                        input.input-prop.input-height(type='number', size='5', name='num', min='1', max='50', value='1')
+                        span.prop-title-depth
+                            | Глубина:
+                        input.input-prop.input-depth(type='number', size='5', name='num', min='1', max='50', value='1')
+                        .btn-remove-object
+                            i.fa.fa-times
+
+
+    //button.btn-editor-mode
+    //    | Редактор
+    //button.btn-view-mode
+    //    | Просмотр
+    //button.btn-add-cube
+    //    | Добавить препятствие
+    //button.btn-remove-object
+    //    | Удалить объект
+    //input(type='number', size='3', name='num', min='1', max='10', value='1')
+

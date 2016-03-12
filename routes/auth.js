@@ -38,7 +38,7 @@ router.post('/', function(req, res, next) {
             fillSessionInfo(req.session, user[0]);
             res.send(200);
         } else {
-            res.send(403);
+            res.send(401);
         }
     });
 });
@@ -68,7 +68,6 @@ router.get('/userInfo', function(req, res, next) {
     } else {
         res.send(418);
     }
-
 
 });
 

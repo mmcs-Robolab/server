@@ -1,12 +1,14 @@
 .header-container {
     /*margin-left: 40px;*/
     /*margin-right: 20px;*/
+    z-index: 99999;
 }
 
 .header-topline {
     background-color: #43484C;
     padding: 10px 0;
     box-shadow: 0 1px 5px 1px #292a2a;
+    z-index: 9999;
 }
 
 .header-topline a {
@@ -16,7 +18,6 @@
 .top-links {
     display: inline-block;
     vertical-align: middle;
-    z-index: 10;
 }
 
 .top-links a {
@@ -130,7 +131,7 @@
     display: inline-block;
 }
 
-.topline-menu li.active > a {
+.topline-menu li.active {
     background-color: #8b8c8d;
 }
 

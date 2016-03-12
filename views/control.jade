@@ -4,30 +4,52 @@ block content
     .col-md-12.control-container
         .row
             .col-md-7.drive-col
-                .editor-panel
+
+                .gamepad-container
                     .btn-icon.btn-gamepad
                         i.fa.fa-gamepad
-                    .editor-prop
-                        span.panel-info Тема
-                        select.theme-select
-                            option(value="monokai") Monokai
-                            option(value="tomorrow") Tomorrow
-                            option(value="twilight") Twilight
+                    .gamepad-btn.btn-up#btn-up
+                        i.fa.fa-arrow-up
+                    .left-right-container
+                        .gamepad-btn.btn-left#btn-left
+                            i.fa.fa-arrow-left
+                        .gamepad-btn.btn-right#btn-right
+                            i.fa.fa-arrow-right
+                    .gamepad-btn.btn-down#btn-down
+                        i.fa.fa-arrow-down
 
-                        span.panel-info Язык
-                        select.lang-select
-                            option(value="csharp") C#
-                            option(value="pascal") Pascal
-                #editor.code-area
-                .editor-bottom-panel
-                    input(type="file").file-loader-input
-                    button.file-loader-btn
-                        i.fa.fa-cloud-upload
-                    button.btn-compile компиляция
+                .editor-container
+                    .editor-panel
+                        .btn-icon.btn-gamepad
+                            i.fa.fa-gamepad
+                        .editor-prop
+                            span.panel-info Тема
+                            select.theme-select
+                                option(value="monokai") Monokai
+                                option(value="tomorrow") Tomorrow
+                                option(value="twilight") Twilight
+
+                            span.panel-info Язык
+                            select.lang-select
+                                option(value="csharp") C#
+                                option(value="pascal") Pascal
+                    #editor.code-area
+                    .editor-bottom-panel
+                        input(type="file").file-loader-input
+                        button.file-loader-btn
+                            i.fa.fa-cloud-upload
+                        .btn-compile компиляция
+
+
             .col-md-5
                 .video-panel
                     .btn-icon.btn-camera
                         i.fa.fa-video-camera
+                    select.select-devices
+                        option#0(value="0") Устройство
+                    select.select-clients
+                        option#0(value="00") Удаленный клиент
+
                 .video-area
                     iframe(src="//player.vimeo.com/video/109832468", width="100%", height="100%", frameborder="0")
-
+                .log-container
