@@ -8,7 +8,7 @@ var editor = {
         this.codeEditor.setOptions({
             enableBasicAutocompletion: true,
             enableSnippets: true,
-            enableLiveAutocompletion: false,
+            enableLiveAutocompletion: true,
             tabSize: 2
         });
     },

@@ -94,6 +94,16 @@ $('.btn-gamepad').click(function() {
     //$('.code-area').slideUp();
 });
 
+$('#editor').keyup(function() {
+    var editorText = editor.codeEditor.getValue();
+    localStorage.setItem("remoteControlEditorText", editorText);
+});
+
+(function() {
+    var editorText = localStorage.getItem("remoteControlEditorText");
+    if(editorText)
+        editor.setEditorValue(editorText);
+})();
 
 // =====================================================
 //                         Socket

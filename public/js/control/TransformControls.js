@@ -1099,7 +1099,10 @@
 
             }
 
-            if (scope.object.position.y - scope.object.geometry.parameters.height/2 <= 0) scope.object.position.y = scope.object.geometry.parameters.height/2;
+            var bbox = new THREE.Box3().setFromObject(scope.object);
+            var objectHeight = bbox.size().y;
+
+            if (scope.object.position.y - objectHeight/2 <= 0) scope.object.position.y = objectHeight/2;
 
             scope.update();
             scope.dispatchEvent( changeEvent );

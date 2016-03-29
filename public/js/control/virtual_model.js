@@ -4,6 +4,15 @@ var loaderCompile = require('../modules/loaderCompile');
 
 $('.topline-menu li').eq(3).addClass('active');
 
+
+// ===================================================
+//                    Protocol
+// ===================================================
+
+const MESSAGE_FILE_CODE = "f#";
+const MESSAGE_UPDATE_SCENE_CODE = "u";
+
+
 // ===================================================
 //                    Editor
 // ===================================================
@@ -46,14 +55,134 @@ $('.file-loader-btn').click(function () {
 
 $('.btn-compile').click(function () {
     var code = editor.codeEditor.getValue();
-
-    var resultMessage = MESSAGE_FILE_CODE + code;
-    socketClient.send(resultMessage);
-
+    //
+    //var resultMessage = MESSAGE_FILE_CODE + code;
+    //socketClient.send(resultMessage);
+    //
     $('.btn-compile').hide();
     $('.editor-bottom-panel').append(loaderCompile.structure());
 
+
+    //var resultMessage = MESSAGE_FILE_CODE + code + "#" + sceneToJson();
+    //socket.send(resultMessage);
+    taskDispetcher.createPointsArray(arrPoints);
+    playFlag = true;
+
 });
+
+$('#editor').keyup(function() {
+    var editorText = editor.codeEditor.getValue();
+    localStorage.setItem("virtualModelEditorText", editorText);
+});
+
+(function() {
+    var editorText = localStorage.getItem("virtualModelEditorText");
+    if(editorText)
+        editor.setEditorValue(editorText);
+})();
+
+// ===================================================
+//                    Socket
+// ===================================================
+
+
+var socket;
+var isConnected = false;
+
+function startSocketClient() {
+
+    socket = new WebSocket("ws://192.168.0.174:3003");
+
+    socket.onopen = function() {
+        showMessage('Соединение установлено', 'message-success');
+        showServerState('server-state-success');
+        isConnected = true;
+        // addLogLine('Клиент подключен','log-line-success');
+
+        //getUserInfo(function(data){
+        //    user = data;
+        //    socket.send('3setUserID' + ' ' + user.userId);
+        //});
+
+    };
+
+    socket.onclose = function(event) {
+        if (event.wasClean) {
+            alert('Соединение закрыто чисто');
+            isConnected = false;
+        } else {
+            showMessage('Обрыв соединения', 'message-error');
+            showServerState('server-state-error');
+            isConnected = false;
+        }
+
+        //try to reconnect in 5 seconds
+        setTimeout(function(){startSocketClient()}, 5000);
+    };
+
+    socket.onmessage = function(event) {
+        var fullMessage =  event.data;
+        var message = fullMessage.slice(1);
+
+        switch (fullMessage[0]) {
+            case "0":
+                showMessage(message, 'message-success');
+                break;
+            case "1":
+            case "2":
+                showMessage(message, 'message-error');
+                break;
+            case "3":
+                parseInfoMessage(message);
+                break;
+        }
+
+        $('.cssload-jumping').remove();
+        $('.btn-compile').show();
+    };
+
+    socket.onerror = function(error) {
+        //alert("Ошибка " + error);
+        showMessage('Не удается установить соединение с сервером', 'message-error');
+        isConnected = false;
+    };
+
+}
+
+startSocketClient();
+// ---------------- Functions ------------ //
+
+
+function parseInfoMessage(mess) {
+    var messArr = mess.split('#');
+    switch (messArr[0]) {
+        case 'setUserID':
+            socket.send('3getClients');
+            break;
+
+        case 'setClientsList':
+            createClientsList(messArr[1]);
+            break;
+    }
+}
+
+// ---------------- Decor functions ------------ //
+function showMessage(text, typeClass) {
+    $('.message-container').removeClass('message-success');
+    $('.message-container').removeClass('message-error');
+    $('.message-container').addClass(typeClass).html(text).fadeIn(300);
+
+    setTimeout(function() {
+        $('.message-container').fadeOut(1000);
+    }, 2000);
+}
+
+function showServerState(typeClass) {
+    $('.server-state').removeClass('server-state-success');
+    $('.server-state').removeClass('server-state-error');
+
+    $('.server-state').addClass(typeClass);
+}
 
 
 // ===================================================
@@ -65,8 +194,11 @@ var w = $('#graph-container').width();
 const RENDERER_WIDTH =  w,
       RENDERER_HEIGHT =  500;
 
+const PLANE_WIDTH = 300,
+      PLANE_HEIGHT = 300;
+
 var scene = new THREE.Scene();
-var camera = new THREE.PerspectiveCamera(70 , window.innerWidth / window.innerHeight , 1, 10000);
+var camera = new THREE.PerspectiveCamera(70 , RENDERER_WIDTH / RENDERER_HEIGHT , 0.1, 2000);
 scene.add(camera);
 
 var renderer = new THREE.WebGLRenderer();
@@ -79,34 +211,62 @@ var robot = null,
     viewMode = null,
     transformControls = null;
 
+var robotParameters = {
+    direction: new THREE.Vector3(0,0,-1),
+    angleAccumulator: 0
+}
+
+var robotBoundingBox = null;
 var objectList = [];
 
-var raycaster = new THREE.Raycaster();
-var mouse = new THREE.Vector2(), INTERSECTED;
+var raycaster = new THREE.Raycaster(),
+    mouse = new THREE.Vector2(),
+    INTERSECTED;
 
-
-init();
-
-renderScene();
-
+var playFlag = false;
 
 function init() {
+
     // ============= Renderer =============== //
     renderer.setSize(RENDERER_WIDTH, RENDERER_HEIGHT);
     renderer.shadowMap.enabled = true;
     renderer.setClearColor( 0xffffff );
 
+    // ============= Skybox =============== //
+
+    scene.add( makeSkybox( [
+        'dist/img/textures/sky_right.jpg', // right
+        'dist/img/textures/sky_left.jpg', // left
+        'dist/img/textures/sky_top.jpg', // top
+        'dist/img/textures/sky_bottom.jpg', // bottom
+        'dist/img/textures/sky_back.jpg', // back
+        'dist/img/textures/sky_front.jpg'  // front
+    ], 1000 ));
+
     // ============= Robot =============== //
-    robot = createRobotModel();
-    robot.position.x = -20;
-    robot.position.y = 2;
-    robot.position.z = 2;
-    robot.name = "robot";
-    robot.castShadow = true;
-    scene.add(robot);
+    createRobotModel2(function(model) {
+        robot = model;
+
+        var bbox = new THREE.Box3().setFromObject(robot);
+
+        robot.position.x = 0;
+        robot.position.y = bbox.size().y/2;
+        robot.position.z = 0;
+        //robot.rotation.y = Math.PI;
+        robot.name = "robot";
+        robot.castShadow = true;
+        //robot.geometry.computeBoundingBox();
+        //robotBoundingBox = robot.geometry.boundingBox;
+        scene.add(robot);
+
+        camera.lookAt(robot.position);
+    });
+
+
+    //createRobotModel2();
 
     // ============= Plane =============== //
-    plane = createPlane(300, 300);
+    plane = createPlane(PLANE_WIDTH, PLANE_HEIGHT);
     plane.material.side = THREE.DoubleSide;
     plane.receiveShadow = true;
     plane.rotation.x=-0.5*Math.PI;
@@ -116,25 +276,28 @@ function init() {
     scene.add(plane);
 
     // ============= Camera =============== //
-    camera.position.x = -30;
-    camera.position.y = 80;
+    camera.position.x = 0;
+    camera.position.y = 20;
     camera.position.z = 30;
-    camera.lookAt(scene.position);
+    //camera.lookAt(robot.position);
     viewCamPosition = new THREE.Vector3(camera.position.x, camera.position.y, camera.position.z);
+    viewMode = "view";
 
     // ============= Light =============== //
     var spotLight = new THREE.SpotLight( 0xffffff );
     spotLight.position.set(-100,200,-20);//( -40, 60, -10 );
     spotLight.castShadow = true;
-    scene.add(spotLight );
+    scene.add(spotLight);
 
+    var ambientLight = new THREE.AmbientLight(0x606060);
+    scene.add(ambientLight);
 
 
     // ============= Control =============== //
     controls = new THREE.OrbitControls( camera, renderer.domElement );
     controls.addEventListener( 'change', orbitListener);
     controls.noRotate = true;
-    controls.noZoom = false;
+    controls.noZoom = true;
 
     transformControls = new THREE.TransformControls( camera, renderer.domElement );
     transformControls.name = "transformControls";
@@ -143,41 +306,25 @@ function init() {
     document.getElementById( 'graph-container' ).appendChild( renderer.domElement );
 }
 
-function renderScene() {
-    requestAnimationFrame(renderScene);
-    render();
+
+function makeSkybox( urls, size ) {
+    var skyboxCubemap = new THREE.CubeTextureLoader().load( urls );
+    skyboxCubemap.format = THREE.RGBFormat;
+    var skyboxShader = THREE.ShaderLib['cube'];
+    skyboxShader.uniforms['tCube'].value = skyboxCubemap;
+    return new THREE.Mesh(
+        new THREE.BoxGeometry( size, size, size ),
+        new THREE.ShaderMaterial({
+            fragmentShader : skyboxShader.fragmentShader,
+            vertexShader : skyboxShader.vertexShader,
+            uniforms : skyboxShader.uniforms,
+            depthWrite : false,
+            side : THREE.BackSide
+        })
+    );
 }
 
-
-function render() {
-    //console.log("pos x: " + camera.position.x + " pos y:" + camera.position.y + " pos z:" + camera.position.z + " rotx: " + camera.rotation.x + " roty:" + camera.rotation.y + " rotz:" + camera.rotation.z);
-    renderer.render(scene, camera);
-}
-
-function createRobotModel2() {
-    var manager = new THREE.LoadingManager();
-    manager.onProgress = function ( item, loaded, total ) {
-
-        console.log( item, loaded, total );
-
-    };
-
-    //var mainTexture;
-    //
-    //var loaderTexture = new THREE.TextureLoader();
-    //loaderTexture.load(
-    //    "dist/img/textures/bb8.jpg",
-    //    function (texture) {
-    //        mainTexture = texture;
-    //    },
-    //    function ( xhr ) {
-    //        console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );
-    //    },
-    //    // Function called when download errors
-    //    function ( xhr ) {
-    //        console.log( 'An error happened ' );
-    //    }
-    //);
+function createRobotModel2(callback) {
 
     var onProgress = function ( xhr ) {
         if ( xhr.lengthComputable ) {
@@ -190,26 +337,30 @@ function createRobotModel2() {
         console.log("errrrror");
     };
 
-    // model
 
-    var loader = new THREE.OBJLoader( manager );
-    loader.load( 'dist/img/models/body.obj', function ( object ) {
+    var mtlLoader = new THREE.MTLLoader();
+    mtlLoader.setBaseUrl( 'dist/img/models/' );
+    mtlLoader.setPath( 'dist/img/models/' );
 
-        //object.traverse( function ( child ) {
-        //
-        //    if ( child instanceof THREE.Mesh ) {
-        //
-        //        child.material.map = mainTexture;
-        //
-        //    }
-        //
-        //} );
+    mtlLoader.load( 'Wall-E.mtl', function( materials ) {
+        materials.preload();
+        var objLoader = new THREE.OBJLoader();
+        objLoader.setMaterials( materials );
+        objLoader.setPath( 'dist/img/models/' );
+        objLoader.load( 'Wall-e.obj', function ( object ) {
 
-        object.position.y = 2;
-        object.scale.set(0.09,0.09,0.09);
-        scene.add( object );
+            object.traverse( function ( child ) {
+                if ( child instanceof THREE.Mesh ) {
+                    child.name = "robot";
 
-    }, onProgress, onError );
+
+                }
+            } );
+
+            callback(object);
+        }, onProgress, onError );
+    });
+
 }
 
 function createRobotModel() {
@@ -232,35 +383,10 @@ function createPlane(height, width) {
     return new THREE.Mesh(planeGeometry,planeMaterial);
 }
 
-
 var orbitListener = function() {
     camera.lookAt(lookAt);
     renderer.render( scene, camera );
 };
-
-var handler = function( down ) {
-    return function( e ) {
-        switch( e.keyCode ) {
-            case 87:
-                //camera.rotation.z += 10 * Math.PI / 180;
-                //robot.position.x += 0.5;
-                //camera.position.x += 0.5;
-                //viewCamPosition.x += 0.5;
-                //camera.lookAt(robot.position)
-                //renderer.render(scene,camera);
-                break;
-        }
-    };
-};
-//
-//function onDocumentMouseMove( event ) {
-//
-//    event.preventDefault();
-//
-//    mouse.x = ( event.clientX / 800 ) * 2 - 1;//( event.clientX / window.innerWidth ) * 2 - 1;
-//    mouse.y = - ( event.clientY / 800 ) * 2 + 1; //- ( event.clientY / window.innerHeight ) * 2 + 1;
-//
-//}
 
 $('#graph-container').mousemove(function(e) {
 
@@ -268,67 +394,101 @@ $('#graph-container').mousemove(function(e) {
     var x = ( e.clientX - rect.left ) / rect.width;
     var y = ( e.clientY - rect.top ) / rect.height;
 
-   // pointerVector.set( ( x * 2 ) - 1, - ( y * 2 ) + 1 );
+    mouse.x = ( x * 2 ) - 1;
+    mouse.y = - ( y * 2 ) + 1;
 
-    mouse.x = ( x * 2 ) - 1; // (e.clientX/500)*2 - 1; // ( event.clientX / 800 ) * 2 - 1;
-    mouse.y = - ( y * 2 ) + 1; // (e.clientY/500)*2 + 1; // - ( event.clientY / 800 ) * 2 + 1;
 });
 
-
-function onDocumentMouseDown() {
+function onContainerMouseDown() {
     if(viewMode != "edit")
         return;
     raycaster.setFromCamera( mouse, camera );
 
-    var intersects = raycaster.intersectObjects( scene.children );
+    var intersects = raycaster.intersectObjects( scene.children, true );
 
-    console.log(intersects.length);
     if ( intersects.length > 0 ) {
+
         if (intersects[0].object.name == "selectable" || intersects[0].object.name == "robot") {
             if ( INTERSECTED != intersects[ 0 ].object ) {
-                if (INTERSECTED) INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex);
 
-                INTERSECTED = intersects[0].object;
-                INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
-                INTERSECTED.material.emissive.setHex(0xff0000);
-
-                transformControls.attach(INTERSECTED);
-                controls.noRotate = true;
-                //scene.add(obj);
-                scene.add(transformControls);
-
-                if(INTERSECTED == robot) {
-                    hideObjectPropPanel();
-                    showRobotPropPanel();
-                } else {
-                    hideRobotPropPanel();
-                    showObjectPropPanel(INTERSECTED.geometry.parameters.width,
-                                        INTERSECTED.geometry.parameters.height,
-                                        INTERSECTED.geometry.parameters.depth);
-                }
-
+                selectObject(intersects[0].object);
             }
         } else {
-            if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
 
-            INTERSECTED = null;
+            unselectObject();
 
-            transformControls.detach();
-            controls.noRotate = false;
-            hideObjectPropPanel();
-            hideRobotPropPanel();
-            //scene.remove(transformControls);
-            //renderer.render(scene, camera);
         }
 
     } else {
 
-        if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
-
-        INTERSECTED = null;
-        hideObjectPropPanel();
-        hideRobotPropPanel();
+        unselectObject();
     }
+}
+
+
+function selectObject(object) {
+
+    if (object.name == "selectable") {
+        unselectObject();
+
+        INTERSECTED = object;
+        INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
+        INTERSECTED.material.emissive.setHex(0xff0000);
+
+        transformControls.attach(INTERSECTED);
+        controls.noRotate = true;
+        scene.add(transformControls);
+
+
+        hideRobotPropPanel();
+        showObjectPropPanel(INTERSECTED.geometry.parameters.width,
+            INTERSECTED.geometry.parameters.height,
+            INTERSECTED.geometry.parameters.depth);
+
+    } else {
+        unselectObject();
+
+        INTERSECTED = object.parent;
+
+        INTERSECTED.traverse(function (child) {
+            if (child instanceof THREE.Mesh) {
+                child.currentHex = child.material.emissive.getHex();
+                child.material.emissive.setHex(0xff0000);
+            }
+        });
+
+        transformControls.attach(INTERSECTED);
+        controls.noRotate = true;
+        scene.add(transformControls);
+
+        hideObjectPropPanel();
+        showRobotPropPanel();
+
+    }
+}
+
+function unselectObject() {
+    if(!INTERSECTED) return;
+
+    if(INTERSECTED.name == "selectable") {
+        if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
+    }
+    else {
+        INTERSECTED.traverse(function (child) {
+            if (child instanceof THREE.Mesh) {
+                child.material.emissive.setHex(0x000000);
+            }
+        });
+
+    }
+
+    INTERSECTED = null;
+
+    transformControls.detach();
+    scene.remove(transformControls);
+    controls.noRotate = false;
+    hideObjectPropPanel();
+    hideRobotPropPanel();
 }
 
 $('.btn-editor-mode').click(function() {
@@ -339,11 +499,13 @@ $('.btn-editor-mode').click(function() {
     }
 
     lookAt = scene.position;
+    camera.position.y = 40;
     camera.lookAt(lookAt);
 
     renderer.render( scene, camera );
 
     controls.noRotate = false;
+    controls.noZoom = false;
 
     $('.btn-add-cube').removeClass('btn-add-cube-disabled');
     viewMode = "edit";
@@ -365,45 +527,40 @@ $('.btn-view-mode').click(function() {
 
     lookAt = robot.position;
 
-    camera.position.x = robot.position.x;//viewCamPosition.x;
-    camera.position.y = viewCamPosition.y;
-    camera.position.z = robot.position.z;//viewCamPosition.z;
-    camera.lookAt(lookAt);
+    var relativeCameraOffset = new THREE.Vector3(0,20,30);
+    var cameraOffset = relativeCameraOffset.applyMatrix4( robot.matrixWorld );
+    camera.position.x = cameraOffset.x;
+    camera.position.y = cameraOffset.y;
+    camera.position.z = cameraOffset.z;
+    camera.lookAt( lookAt );
 
-    camera.rotation.z += 180  * Math.PI / 180;
     renderer.render( scene, camera );
 
     controls.noRotate = true;
-
+    controls.noZoom = true;
     $('.btn-add-cube').addClass('btn-add-cube-disabled');
+
+    if(isConnected && viewMode != "view") {
+        alert(123);
+        var jsonScene = sceneToJson();
+
+        socket.send("updateScene#" + jsonScene);
+    }
     viewMode = "view";
+
 });
 
-var obj;
+//var obj;
 $('.btn-add-cube').click(function() {
     var cubeGeometry = new THREE.BoxGeometry(20,10,20);
     var cubeMaterial = new THREE.MeshLambertMaterial({  map: THREE.ImageUtils.loadTexture('dist/img/textures/box_texture.jpg')}); //({color: 0xffff00});
 
-    obj = new THREE.Mesh(cubeGeometry, cubeMaterial);
+    var obj = new THREE.Mesh(cubeGeometry, cubeMaterial);
     obj.position.y = 5;
     obj.name = "selectable";
 
-
-    // Remove any select properties (color, axes)
-    if(INTERSECTED) {
-        INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
-
-        INTERSECTED = null;
-
-        transformControls.detach();
-    }
-
-    // Select new object
-    INTERSECTED = obj;
-    INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
-    INTERSECTED.material.emissive.setHex(0xff0000);
-    controls.noRotate = true;
-    transformControls.attach(obj);
+    unselectObject();
+    selectObject(obj);
 
     showObjectPropPanel(INTERSECTED.geometry.parameters.width,
                         INTERSECTED.geometry.parameters.height,
@@ -411,7 +568,8 @@ $('.btn-add-cube').click(function() {
 
     scene.add(transformControls);
     objectList.push(obj);
-    scene.add(objectList[objectList.length-1]);
+    scene.add(obj);
+
 });
 
 $('.btn-remove-object').click(function() {
@@ -500,100 +658,274 @@ $('.input-depth').change(function() {
     changeSizeListener(width, height, depth);
 });
 
-$('#graph-container').click(onDocumentMouseDown);
+$('#graph-container').click(onContainerMouseDown);
+$('#graph-container').mouseenter(function() {
+    document.body.style.overflow = "hidden";
+});
 
-window.addEventListener( "keydown", handler( true ), false );
-//window.addEventListener( "keyup", handler( false ), false );
-//document.addEventListener( 'mousemove', onDocumentMouseMove, false );
-//document.addEventListener( 'mousedown', onDocumentMouseDown, false );
-
-
-
-// ===================================================
-//                    Socket
-// ===================================================
+$('#graph-container').mouseleave(function() {
+    document.body.style.overflow = "";
+});
 
 
-var socket = new WebSocket("ws://192.168.0.174:3003");
+function sceneToJson() {
+    var mainArr = [];
 
-socket.onopen = function() {
-    showMessage('Соединение установлено', 'message-success');
-    showServerState('server-state-success');
-   // addLogLine('Клиент подключен','log-line-success');
 
-    //getUserInfo(function(data){
-    //    user = data;
-    //    socket.send('3setUserID' + ' ' + user.userId);
-    //});
+    var bbox = new THREE.Box3().setFromObject(robot);
 
+    var boundWidth = bbox.size().x;
+    var boundHeight = bbox.size().y;
+    var boundDepth = bbox.size().z;
+
+    var robotObject = {
+        name: "robot",
+        id: 1000,
+        x: robot.position.x,
+        y: robot.position.y,
+        z: robot.position.z,
+        width: boundWidth,
+        height: boundHeight,
+        depth: boundDepth
+    };
+    mainArr.push(robotObject);
+
+    for(var i = 0; i < objectList.length; ++i) {
+        var obj = {
+            name : "barrier",
+            id: i,
+            x: objectList[i].position.x,
+            y: objectList[i].position.y,
+            z: objectList[i].position.z,
+            width: objectList[i].geometry.parameters.width,
+            height: objectList[i].geometry.parameters.height,
+            depth: objectList[i].geometry.parameters.depth
+        };
+
+        mainArr.push(obj);
+    }
+
+
+    var plane = {
+        name: "plane",
+        id: 2000,
+        x: 0,
+        y: 0,
+        z: 0,
+        width: PLANE_WIDTH,
+        height: PLANE_HEIGHT
+    };
+
+    mainArr.push(plane);
+    return JSON.stringify(mainArr);
+}
+
+window.onbeforeunload = function() {
+    return "Если вы обновите страницу, сцена вернется в прежнее состояние :(";
 };
 
-socket.onclose = function(event) {
-    if (event.wasClean) {
-        alert('Соединение закрыто чисто');
+
+// ================================================ //
+//                Robot movements
+// ================================================ //
+var arrPoints = [
+    new THREE.Vector3(18,2,25),//,
+    new THREE.Vector3(30,2,10),
+    new THREE.Vector3(-17,2,2),
+    new THREE.Vector3(-1,2,2)//,
+   // new THREE.Vector3(-15,2,2),
+    //new THREE.Vector3(-14,2,2),
+    //new THREE.Vector3(-13,2,2),
+    //new THREE.Vector3(-12,2,2),
+    //new THREE.Vector3(-11,2,2),
+    //new THREE.Vector3(-10,2,2),
+    //new THREE.Vector3(-9,2,2),
+    //new THREE.Vector3(-8,2,2),
+    //new THREE.Vector3(-7,2,2),
+    //new THREE.Vector3(-6,2,2),
+    //new THREE.Vector3(-5,2,2),
+    //new THREE.Vector3(-4,2,2),
+    //new THREE.Vector3(-3,2,2),
+    //new THREE.Vector3(-2,2,2),
+    //new THREE.Vector3(-1,2,2),
+   // new THREE.Vector3(60,2,2)
+
+    ];
+
+
+
+
+function calcAngleToPoint(targetPosition) {
+
+    var target = new THREE.Vector3().subVectors(targetPosition, robot.position).normalize();
+
+    var cosAngle = robotParameters.direction.dot(target);
+    var angle = Math.acos(cosAngle);
+
+    var cross = new THREE.Vector3();
+    cross.crossVectors(robotParameters.direction, target);
+
+    if(cross.y*robot.up.y < 0) {
+        angle *= -1;
+    }
+
+    return angle;
+}
+
+function rotateRobotToPoint(targetPosition) {
+
+    var rotAngle = calcAngleToPoint(targetPosition);
+    var rotateSpeed = 0.01 * Math.PI/2;
+    var sign = rotAngle?rotAngle<0?-1:1:0;
+
+    rotateSpeed *= sign;
+
+    if(Math.abs(robotParameters.angleAccumulator - rotAngle) > 0.01) {
+        robot.rotateOnAxis(new THREE.Vector3(0,1,0), rotateSpeed);
+        robotParameters.angleAccumulator += rotateSpeed;
     } else {
-        showMessage('Обрыв соединения', 'message-error');
-        showServerState('server-state-error');
-    }
-};
-
-socket.onmessage = function(event) {
-    var fullMessage =  event.data;
-    var message = fullMessage.slice(1);
-
-    switch (fullMessage[0]) {
-        case "0":
-            showMessage(message, 'message-success');
-            break;
-        case "1":
-        case "2":
-            showMessage(message, 'message-error');
-            break;
-        case "3":
-            parseInfoMessage(message);
-            break;
+        robotParameters.angleAccumulator = 0;
+        robotParameters.direction = robotParameters.direction.applyAxisAngle(new THREE.Vector3(0,1,0), rotAngle );
+        taskDispetcher.taskComplete();
     }
 
-    $('.cssload-jumping').remove();
-    $('.btn-compile').show();
-};
+}
 
-socket.onerror = function(error) {
-    //alert("Ошибка " + error);
-    showMessage('Не удается установить соединение с сервером', 'message-error');
-};
+function moveRobotToPoint(targetPosition) {
+
+    var moveSpeed = 0.2;
+    var distance = Math.sqrt(Math.pow(targetPosition.x - robot.position.x, 2)
+                            //+ Math.pow(targetPosition.y - robot.position.y, 2)
+                            + Math.pow(targetPosition.z - robot.position.z, 2));
+
+    var velocity = new THREE.Vector3();
+    velocity.copy(robotParameters.direction);
+    velocity.multiplyScalar(moveSpeed);
 
 
-// ---------------- Functions ------------ //
-
-
-function parseInfoMessage(mess) {
-    var messArr = mess.split('#');
-    //console.log(messArr);
-    switch (messArr[0]) {
-        case 'setUserID':
-            socket.send('3getClients');
-            break;
-
-        case 'setClientsList':
-            createClientsList(messArr[1]);
-            break;
+    if(distance > 1) {
+        robot.position.add(velocity);
+    } else {
+        taskDispetcher.taskComplete();
     }
 }
 
-// ---------------- Decor functions ------------ //
-function showMessage(text, typeClass) {
-    $('.message-container').addClass(typeClass).html(text).fadeIn(300);
+// ================================================ //
+//                Task dispetcher
+// ================================================ //
 
-    setTimeout(function() {
-        $('.message-container').fadeOut(1000);
-    }, 2000);
+var taskDispetcher = {};
+taskDispetcher.taskStack = [];
+taskDispetcher.pointsArray = [];
+taskDispetcher.curPointsArrayIndex = 0;
+
+taskDispetcher.createPointsArray = function(arr) {
+    this.pointsArray = arr.slice(0);
+};
+
+taskDispetcher.incPointsArrayIndex = function() {
+    ++this.curPointsArrayIndex;
+};
+
+taskDispetcher.nullPointsArrayIndex = function() {
+    this.curPointsArrayIndex = 0;
+};
+
+taskDispetcher.haveMorePoint = function() {
+    return this.curPointsArrayIndex < this.pointsArray.length;
+};
+
+taskDispetcher.getCurPoint = function() {
+  return this.pointsArray[this.curPointsArrayIndex];
+};
+
+taskDispetcher.newTask = function (name, point) {
+    var newTask = {
+        name: name,
+        point: point
+    };
+    this.taskStack.push(newTask);
+};
+
+taskDispetcher.taskComplete = function() {
+    this.taskStack.pop();
+};
+
+taskDispetcher.doTask = function() {
+    var ind = this.taskStack.length - 1;
+    switch(this.taskStack[ind].name) {
+        case "rotate":
+            rotateRobotToPoint(this.taskStack[ind].point);
+            break;
+        case "move":
+            moveRobotToPoint(this.taskStack[ind].point);
+            break;
+        default:
+            break;
+    }
+};
+
+taskDispetcher.isFree = function() {
+    return this.taskStack.length == 0;
+};
+// ================================================ //
+
+function renderScene() {
+    playScene();
+    render();
+    requestAnimationFrame(renderScene);
 }
 
-function showServerState(typeClass) {
-    $('.server-state').addClass(typeClass);
-
-    //setTimeout(function() {
-    //    $('.message-container').fadeOut(1000);
-    //}, 2000);
+function render() {
+    renderer.render(scene, camera);
 }
+
+function updateCamPosition()
+{
+    var relativeCameraOffset = new THREE.Vector3(0,20,30);
+    var cameraOffset = relativeCameraOffset.applyMatrix4( robot.matrixWorld );
+    camera.position.x = cameraOffset.x;
+    camera.position.y = cameraOffset.y;
+    camera.position.z = cameraOffset.z;
+    camera.lookAt( robot.position );
+
+}
+
+function playScene() {
+
+    if(playFlag) {
+        if(taskDispetcher.haveMorePoint()) {
+
+            if(taskDispetcher.isFree()) {
+                var cubeGeometry = new THREE.BoxGeometry(1,1,1);
+                var cubeMaterial = new THREE.MeshLambertMaterial({color: 0xff0000});
+
+                var obj = new THREE.Mesh(cubeGeometry, cubeMaterial);
+                obj.position.copy(taskDispetcher.getCurPoint());
+                scene.add(obj);
+
+                taskDispetcher.newTask("move", obj.position);
+                taskDispetcher.newTask("rotate", obj.position);
+                taskDispetcher.doTask();
+
+                taskDispetcher.incPointsArrayIndex();
+            } else {
+                taskDispetcher.doTask();
+            }
+
+        } else {
+
+            if(taskDispetcher.isFree()) {
+                playFlag = false;
+                taskDispetcher.nullPointsArrayIndex();
+            } else {
+                taskDispetcher.doTask();
+            }
+
+        }
+        updateCamPosition();
+    }
+}
+
+init();
+renderScene();
