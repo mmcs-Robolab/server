@@ -9,9 +9,19 @@ $('.topline-menu li').eq(3).addClass('active');
 //                    Protocol
 // ===================================================
 
-const MESSAGE_FILE_CODE = "f#";
-const MESSAGE_UPDATE_SCENE_CODE = "u";
+// OUT
 
+const MESSAGE_DIVIDER_COMMAND = "#";
+const COMPILATION_REQ_COMMAND = "compileRobot";
+const SIMULATION_CREATE_REQ_COMMAND = "createSimulation";
+const SIMULATION_PAUSE_COMMAND = "pauseSimulation";
+
+// IN
+
+const SIMULATION_CREATE_RES_COMMAND = "creationResult";
+const SIMULATION_POINTS_RES_COMMAND = "simulationPoints";
+const COMPILATION_RES_COMMAND = "compilationResult";
+const MESSAGE_FROM_ROBOT_COMMAND = "messageFromRobot";
 
 // ===================================================
 //                    Editor
@@ -54,20 +64,21 @@ $('.file-loader-btn').click(function () {
 });
 
 $('.btn-compile').click(function () {
-    var code = editor.codeEditor.getValue();
-    //
-    //var resultMessage = MESSAGE_FILE_CODE + code;
-    //socketClient.send(resultMessage);
-    //
+
     $('.btn-compile').hide();
     $('.editor-bottom-panel').append(loaderCompile.structure());
 
+    var resultMessage = SIMULATION_CREATE_REQ_COMMAND + MESSAGE_DIVIDER_COMMAND + sceneToJson();
 
-    //var resultMessage = MESSAGE_FILE_CODE + code + "#" + sceneToJson();
-    //socket.send(resultMessage);
-    taskDispetcher.createPointsArray(arrPoints);
-    playFlag = true;
+    socket.send(resultMessage);
+});
 
+$('.btn-stop').click(function() {
+    socket.send(SIMULATION_PAUSE_COMMAND);
+    $('.btn-stop').hide();
+    $('.cssload-jumping').hide();
+    $('.btn-compile').show();
+    playFlag = false;
 });
 
 $('#editor').keyup(function() {
@@ -122,18 +133,26 @@ function startSocketClient() {
 
     socket.onmessage = function(event) {
         var fullMessage =  event.data;
-        var message = fullMessage.slice(1);
-
-        switch (fullMessage[0]) {
-            case "0":
-                showMessage(message, 'message-success');
+        var message = fullMessage.split('#');
+        //console.log(fullMessage);
+        switch (message[0]) {
+            case SIMULATION_CREATE_RES_COMMAND:
+                var code = editor.codeEditor.getValue();
+                var resultMessage = COMPILATION_REQ_COMMAND + MESSAGE_DIVIDER_COMMAND + "MyRobot" + MESSAGE_DIVIDER_COMMAND + code;
+                socket.send(resultMessage);
                 break;
-            case "1":
-            case "2":
-                showMessage(message, 'message-error');
+            case COMPILATION_RES_COMMAND:
+                showMessage("Компиляция прошла успешно", "message-success");
+                $('.btn-stop').css('display', 'inline-block');
                 break;
-            case "3":
-                parseInfoMessage(message);
+            case SIMULATION_POINTS_RES_COMMAND:
+                var list = parsePointList(message);
+                console.log(list);
+                taskDispetcher.addPointsArray(list);
+                playFlag = true;
+                break;
+            case MESSAGE_FROM_ROBOT_COMMAND:
+                showMessage(message[1], "message-success");
                 break;
         }
 
@@ -152,6 +171,25 @@ function startSocketClient() {
 startSocketClient();
 // ---------------- Functions ------------ //
 
+function parsePointList(list) {
+
+    var ind = 1;
+    var resArr = [];
+    while(ind < list.length - 1) {
+
+        resArr.push({
+            point : new THREE.Vector3(list[ind], list[ind + 1], list[ind + 2]),
+            moveType : list[ind + 3]
+        });
+
+
+        console.log(resArr);
+        ind += 4;
+    }
+
+   // console.log(resArr);
+    return resArr;
+}
 
 function parseInfoMessage(mess) {
     var messArr = mess.split('#');
@@ -329,7 +367,7 @@ function createRobotModel2(callback) {
     var onProgress = function ( xhr ) {
         if ( xhr.lengthComputable ) {
             var percentComplete = xhr.loaded / xhr.total * 100;
-            console.log( Math.round(percentComplete, 2) + '% downloaded' );
+           // console.log( Math.round(percentComplete, 2) + '% downloaded' );
         }
     };
 
@@ -552,11 +590,15 @@ $('.btn-view-mode').click(function() {
 
 //var obj;
 $('.btn-add-cube').click(function() {
+
     var cubeGeometry = new THREE.BoxGeometry(20,10,20);
-    var cubeMaterial = new THREE.MeshLambertMaterial({  map: THREE.ImageUtils.loadTexture('dist/img/textures/box_texture.jpg')}); //({color: 0xffff00});
+    var cubeMaterial = new THREE.MeshLambertMaterial({
+        map: THREE.ImageUtils.loadTexture('dist/img/textures/box_texture.jpg')});
 
     var obj = new THREE.Mesh(cubeGeometry, cubeMaterial);
     obj.position.y = 5;
+
+
     obj.name = "selectable";
 
     unselectObject();
@@ -681,22 +723,26 @@ function sceneToJson() {
     var robotObject = {
         name: "robot",
         id: 1000,
-        x: robot.position.x,
-        y: robot.position.y,
-        z: robot.position.z,
+        position : {x : robot.position.x, y : robot.position.y, z : robot.position.z},
+        //x: robot.position.x,
+        //y: robot.position.y,
+        //z: robot.position.z,
         width: boundWidth,
         height: boundHeight,
         depth: boundDepth
     };
     mainArr.push(robotObject);
 
+
     for(var i = 0; i < objectList.length; ++i) {
+        console.log(objectList[i].position);
         var obj = {
             name : "barrier",
             id: i,
-            x: objectList[i].position.x,
-            y: objectList[i].position.y,
-            z: objectList[i].position.z,
+            position : {x : objectList[i].position.x, y : objectList[i].position.y, z : objectList[i].position.z},
+            //x: objectList[i].position.x,
+            //y: objectList[i].position.y,
+            //z: objectList[i].position.z,
             width: objectList[i].geometry.parameters.width,
             height: objectList[i].geometry.parameters.height,
             depth: objectList[i].geometry.parameters.depth
@@ -729,10 +775,27 @@ window.onbeforeunload = function() {
 //                Robot movements
 // ================================================ //
 var arrPoints = [
-    new THREE.Vector3(18,2,25),//,
-    new THREE.Vector3(30,2,10),
-    new THREE.Vector3(-17,2,2),
-    new THREE.Vector3(-1,2,2)//,
+    {
+        point: new THREE.Vector3(0, 2, 30),
+        moveType: "backward"
+    },
+    {
+        point: new THREE.Vector3(18,2,25),
+        moveType: "forward"
+    },
+    {
+        point: new THREE.Vector3(-18,2,-25),
+        moveType: "forward"
+    },
+    {
+        point: new THREE.Vector3(-17,2,2),
+        moveType: "forward"
+    },
+    {
+        point: new THREE.Vector3(-1,2,2),
+        moveType: "forward"
+    }
+
    // new THREE.Vector3(-15,2,2),
     //new THREE.Vector3(-14,2,2),
     //new THREE.Vector3(-13,2,2),
@@ -755,15 +818,26 @@ var arrPoints = [
 
 
 
-function calcAngleToPoint(targetPosition) {
+function calcAngleToPoint(targetPosition, forward) {
 
-    var target = new THREE.Vector3().subVectors(targetPosition, robot.position).normalize();
+    var target = new THREE.Vector3().subVectors(new THREE.Vector3(targetPosition.x,0,targetPosition.z),
+                                                new THREE.Vector3(robot.position.x,0,robot.position.z))
+                                                .normalize();
 
-    var cosAngle = robotParameters.direction.dot(target);
+    var direction = new THREE.Vector3();
+
+    if (forward) {
+       direction.copy(robotParameters.direction);
+    } else {
+        direction.copy(robotParameters.direction);
+        direction.multiplyScalar(-1);
+    }
+
+    var cosAngle = direction.dot(target);
     var angle = Math.acos(cosAngle);
 
     var cross = new THREE.Vector3();
-    cross.crossVectors(robotParameters.direction, target);
+    cross.crossVectors(direction, target);
 
     if(cross.y*robot.up.y < 0) {
         angle *= -1;
@@ -772,9 +846,10 @@ function calcAngleToPoint(targetPosition) {
     return angle;
 }
 
-function rotateRobotToPoint(targetPosition) {
+function rotateRobotForwardToPoint(targetPosition) {
 
-    var rotAngle = calcAngleToPoint(targetPosition);
+    var rotAngle = calcAngleToPoint(targetPosition, true);
+
     var rotateSpeed = 0.01 * Math.PI/2;
     var sign = rotAngle?rotAngle<0?-1:1:0;
 
@@ -791,7 +866,27 @@ function rotateRobotToPoint(targetPosition) {
 
 }
 
-function moveRobotToPoint(targetPosition) {
+function rotateRobotBackToPoint(targetPosition) {
+
+    var rotAngle = calcAngleToPoint(targetPosition, false);
+
+    var rotateSpeed = 0.01 * Math.PI/2;
+    var sign = rotAngle?rotAngle<0?-1:1:0;
+
+    rotateSpeed *= sign;
+
+    if(Math.abs(robotParameters.angleAccumulator - rotAngle) > 0.01) {
+        robot.rotateOnAxis(new THREE.Vector3(0,1,0), rotateSpeed);
+        robotParameters.angleAccumulator += rotateSpeed;
+    } else {
+        robotParameters.angleAccumulator = 0;
+        robotParameters.direction = robotParameters.direction.applyAxisAngle(new THREE.Vector3(0,1,0), rotAngle );
+        taskDispetcher.taskComplete();
+    }
+
+}
+
+function moveRobotForwardToPoint(targetPosition) {
 
     var moveSpeed = 0.2;
     var distance = Math.sqrt(Math.pow(targetPosition.x - robot.position.x, 2)
@@ -803,10 +898,30 @@ function moveRobotToPoint(targetPosition) {
     velocity.multiplyScalar(moveSpeed);
 
 
-    if(distance > 1) {
+    if(distance > 0.2) {
         robot.position.add(velocity);
     } else {
         taskDispetcher.taskComplete();
+    }
+}
+
+function moveRobotBackToPoint(targetPosition) {
+
+    var moveSpeed = 0.2;
+    var distance = Math.sqrt(Math.pow(targetPosition.x - robot.position.x, 2)
+            //+ Math.pow(targetPosition.y - robot.position.y, 2)
+        + Math.pow(targetPosition.z - robot.position.z, 2));
+
+
+    var velocity = new THREE.Vector3();
+    velocity.copy(robotParameters.direction);
+    velocity.multiplyScalar(-moveSpeed);
+
+    if(distance > 2) {
+        robot.position.add(velocity);
+    } else {
+        taskDispetcher.taskComplete();
+        //console.log(taskDispetcher);
     }
 }
 
@@ -821,6 +936,10 @@ taskDispetcher.curPointsArrayIndex = 0;
 
 taskDispetcher.createPointsArray = function(arr) {
     this.pointsArray = arr.slice(0);
+};
+
+taskDispetcher.addPointsArray = function(arr) {
+    this.pointsArray = this.pointsArray.concat(arr);
 };
 
 taskDispetcher.incPointsArrayIndex = function() {
@@ -854,12 +973,17 @@ taskDispetcher.taskComplete = function() {
 taskDispetcher.doTask = function() {
     var ind = this.taskStack.length - 1;
     switch(this.taskStack[ind].name) {
-        case "rotate":
-            rotateRobotToPoint(this.taskStack[ind].point);
+        case "rotateForward":
+            rotateRobotForwardToPoint(this.taskStack[ind].point);
             break;
-        case "move":
-            moveRobotToPoint(this.taskStack[ind].point);
+        case "rotateBack":
+            rotateRobotBackToPoint(this.taskStack[ind].point);
             break;
+        case "moveForward":
+            moveRobotForwardToPoint(this.taskStack[ind].point);
+            break;
+        case "moveBack":
+            moveRobotBackToPoint(this.taskStack[ind].point);
         default:
             break;
     }
@@ -901,11 +1025,16 @@ function playScene() {
                 var cubeMaterial = new THREE.MeshLambertMaterial({color: 0xff0000});
 
                 var obj = new THREE.Mesh(cubeGeometry, cubeMaterial);
-                obj.position.copy(taskDispetcher.getCurPoint());
-                scene.add(obj);
+                obj.position.copy(taskDispetcher.getCurPoint().point);
+                //scene.add(obj);
 
-                taskDispetcher.newTask("move", obj.position);
-                taskDispetcher.newTask("rotate", obj.position);
+                if(taskDispetcher.getCurPoint().moveType == "forward") {
+                    taskDispetcher.newTask("moveForward", obj.position);
+                    taskDispetcher.newTask("rotateForward", obj.position);
+                } else {
+                    taskDispetcher.newTask("moveBack", obj.position);
+                    taskDispetcher.newTask("rotateBack", obj.position);
+                }
                 taskDispetcher.doTask();
 
                 taskDispetcher.incPointsArrayIndex();
@@ -929,3 +1058,4 @@ function playScene() {
 
 init();
 renderScene();
+

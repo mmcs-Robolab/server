@@ -21,11 +21,34 @@ $('.topline-menu li').eq(2).addClass('active');
 //};
 
 // ===================================================
-//                    CONST
+//                    Protocol
 // ===================================================
-const MESSAGE_FILE_CODE = 0;
-const MESSAGE_COMMAND_CODE = 1;
 
+// OUT
+const MESSAGE_DIVIDER_COMMAND = "#";
+
+//compilation
+const COMPILATION_REQ_COMMAND = "compileRobot";
+//servers
+const LIST_SERVERS_REQ_COMMAND = "listServers";
+const CHOOSE_SERVER_REQ_COMMAND = "chooseServer";
+//robots
+const LIST_ROBOTS_REQ_COMMAND = "listRobots";
+const BIND_TO_ROBOT_REQ_COMMAND = "bindToRobot";
+
+const MESSAGE_TO_ROBOT = "messageRobot";
+
+// IN
+//compilation
+const COMPILATION_RES_COMMAND = "compilationResult";
+
+const MESSAGE_FROM_ROBOT_COMMAND = "messageFromRobot";
+//servers
+const LIST_SERVERS_RES_COMMAND = "servers";
+const CHOOSE_SERVER_RES_COMMAND = "chosenServer";
+//robots
+const LIST_ROBOTS_RES_COMMAND = "robots";
+const BIND_TO_ROBOT_RES_COMMAND = "bindingResult";
 
 // ===================================================
 //                    Editor
@@ -68,14 +91,13 @@ $('.file-loader-btn').click(function () {
 });
 
 $('.btn-compile').click(function () {
-    var code = editor.codeEditor.getValue();
-
-    var resultMessage = MESSAGE_FILE_CODE + code;
-    socket.send(resultMessage);
 
     $('.btn-compile').hide();
     $('.editor-bottom-panel').append(loaderCompile.structure());
 
+    var code = editor.codeEditor.getValue();
+    var resultMessage = COMPILATION_REQ_COMMAND + MESSAGE_DIVIDER_COMMAND + "MyRobot" + MESSAGE_DIVIDER_COMMAND + code;
+    socket.send(resultMessage);
 });
 
 
@@ -124,19 +146,22 @@ var devicesListSelect = $('.select-devices');
 
 clientsListSelect.change(function() {
     // изменить камеру на камеру нового клиента
-    var id = $(this).val();
-    curClient = $.grep(clientsList, function(elt){ return elt.id == id; })[0];
-    createDevicesList(curClient);
-    devicesListSelect.show(200);
+    //var id = $(this).val();
+    //curClient = $.grep(clientsList, function(elt){ return elt.id == id; })[0];
+    //createDevicesList(curClient);
+    //devicesListSelect.show(200);
+
+    socket.send(CHOOSE_SERVER_REQ_COMMAND + MESSAGE_DIVIDER_COMMAND);
 });
 
 devicesListSelect.change(function() {
     var id = $(this).val();
-    curDevice = $.grep(devicesList, function(elt){ return elt.id == id; })[0];
+    curDevice = $.grep(devicesList, function(elt){ return elt == id; })[0];
+    alert(curDevice);
+    socket.send(BIND_TO_ROBOT_REQ_COMMAND + MESSAGE_DIVIDER_COMMAND + curDevice);
 });
 
 // ------------------------------------ //
-
 
 socket.onopen = function() {
     showMessage('Соединение установлено', 'message-success');
@@ -144,7 +169,7 @@ socket.onopen = function() {
 
     getUserInfo(function(data){
         user = data;
-        socket.send('3setUserID' + ' ' + user.userId);
+        socket.send(LIST_SERVERS_REQ_COMMAND); //send('3setUserID' + ' ' + user.userId);
     });
 
 };
@@ -160,18 +185,34 @@ socket.onclose = function(event) {
 
 socket.onmessage = function(event) {
     var fullMessage =  event.data;
-    var message = fullMessage.slice(1);
+    var message = fullMessage.split('#');
 
-    switch (fullMessage[0]) {
-        case "0":
-            showMessage(message, 'message-success');
+    alert(fullMessage);
+    switch (message[0]) {
+
+        case COMPILATION_RES_COMMAND:
+            showMessage("Компиляция прошла успешно", "message-success");
+            $('.btn-stop').css('display', 'inline-block');
             break;
-        case "1":
-        case "2":
-            showMessage(message, 'message-error');
+
+        case LIST_SERVERS_RES_COMMAND:
+            createClientsList(message);
             break;
-        case "3":
-            parseInfoMessage(message);
+
+        case LIST_ROBOTS_RES_COMMAND:
+            createDevicesList(message);
+            break;
+
+        case CHOOSE_SERVER_RES_COMMAND:
+            showMessage("Сервер " + message[1] + " подключен", "message-success");
+            socket.send(LIST_ROBOTS_REQ_COMMAND);
+            break;
+
+        case BIND_TO_ROBOT_RES_COMMAND:
+            showMessage(message[1], "message-success");
+            break;
+        case MESSAGE_FROM_ROBOT_COMMAND:
+            showMessage(message[1], "message-success");
             break;
     }
 
@@ -222,13 +263,19 @@ function parseInfoMessage(mess) {
 
 function createClientsList(data) {
 
-    var jData = JSON.parse(data);
-    clientsList = jData["clients"];
+    //var jData = JSON.parse(data);
+    //clientsList = jData["clients"];
 
-    clientsList.forEach(function(item, i, arr) {
-        var option = '<option value="' + item.id + '">' + item.name + '</option>';
+    for(var i = 1; i < data.length; ++i) {
+        clientsList.push(data[i]);
+        var option = '<option value="' + data[i] + '">' + data[i] + '</option>';
         clientsListSelect.append(option);
-    });
+    }
+
+    //clientsList.forEach(function(item, i, arr) {
+    //    var option = '<option value="' + item.id + '">' + item.name + '</option>';
+    //    clientsListSelect.append(option);
+    //});
 
     addLogLine('Имеется ' + clientsList.length + ' клиентов', '');
 }
